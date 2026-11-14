@@ -183,16 +183,14 @@
         }
         .btn-cancel { background-color: #6c757d; }
         .btn-confirm { background-color: #dc3545; }
-        /* --- NEW COMBO GRAPHICS CSS --- */
+    /* --- UPDATED COMBO GRAPHICS CSS --- */
         .bonus-container {
-            position: fixed;
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
             display: flex;
-            flex-direction: column;
-            gap: 15px;
-            z-index: 100;
+            justify-content: center; /* Centers them side-by-side */
+            gap: 25px; /* Space between the two graphics */
+            margin-top: 25px; /* Pushes them below the button */
+            padding-bottom: 20px;
+            width: 100%;
         }
         .bonus-img {
             width: 80px;
@@ -206,7 +204,7 @@
             100% { transform: scale(1); opacity: 1; }
         }
         @media(max-width: 600px) {
-            .bonus-img { width: 60px; }
+            .bonus-img { width: 65px; }
         }
     </style>
 </head>
@@ -219,11 +217,7 @@
         <h1>一百二十周年校慶開放日</h1>
         <p style="font-size: 15px; margin: 12px 0 3px 0; font-weight: bold; color: #003366;">Digital Reward Card 電子印花收集卡</p>
     </div>
-<!-- --- NEW COMBO GRAPHICS HTML --- -->
-    <div class="bonus-container">
-        <img id="math-combo-img" class="bonus-img" src="math.png" alt="Math Bonus">
-        <img id="phy-combo-img" class="bonus-img" src="phy.png" alt="Physics Bonus">
-    </div>
+
     <div class="progress-counter" id="progress-text">
         Stamps Collected 印花進度: 0 / 28
     </div>
@@ -280,7 +274,11 @@
             </div>
         </div>
     </div>
-
+<!-- --- NEW COMBO GRAPHICS HTML --- -->
+    <div class="bonus-container">
+        <img id="math-combo-img" class="bonus-img" src="math.png" alt="Math Bonus">
+        <img id="phy-combo-img" class="bonus-img" src="phy.png" alt="Physics Bonus">
+    </div>
     <script>
 const STORAGE_KEY = 'ssgc_scanned_stamps_120';
 const TARGET_STAMPS = 28;
