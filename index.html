@@ -467,12 +467,14 @@ function updateUI() {
     }
     // --- NEW COMBO LOGIC HERE ---
     
-    // 1. Check for Mathematics combo
+// 1. Check for Mathematics combo (Show if ANY 2 or more are scanned)
     const mathKeys = ["SSGC120_Maths_h58p", "SSGC120_Maths_h58q", "SSGC120_Maths_h58r"];
-    const hasAllMath = mathKeys.every(key => collectedStamps.includes(key));
-    document.getElementById('math-combo-img').style.display = hasAllMath ? 'block' : 'none';
+    // This counts how many math keys the user has actually collected
+    const mathCollectedCount = mathKeys.filter(key => collectedStamps.includes(key)).length;
+    // Show the image if the count is 2 or 3
+    document.getElementById('math-combo-img').style.display = (mathCollectedCount >= 2) ? 'block' : 'none';
 
-    // 2. Check for Physics combo
+// 2. Check for Physics combo
     const physicsKeys = ["SSGC120_Physics_n31w", "SSGC120_Physics_n31v", "SSGC120_Physics_n31u"];
     const hasAllPhysics = physicsKeys.every(key => collectedStamps.includes(key));
     document.getElementById('phy-combo-img').style.display = hasAllPhysics ? 'block' : 'none';
