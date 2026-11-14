@@ -466,24 +466,41 @@ function updateUI() {
         congratsBanner.style.display = 'none';
         resetBtn.disabled = true;
     }
-    // --- NEW COMBO LOGIC HERE ---
+  
+// --- NEW COMBO LOGIC HERE ---
     
-// 1. Check for Mathematics combo (Show if ANY 2 or more are scanned)
-    const mathKeys = ["SSGC120_Maths_h58p", "SSGC120_Maths_h58q", "SSGC120_Maths_h58r"];
-    // This counts how many math keys the user has actually collected
-    const mathCollectedCount = mathKeys.filter(key => collectedStamps.includes(key)).length;
-    // Show the image if the count is 2 or 3
-    document.getElementById('math-combo-img').style.display = (mathCollectedCount >= 2) ? 'block' : 'none';
+    // Helper function to find exactly WHEN a combo was unlocked
+    function getUnlockIndex(keys, requiredCount) {
+        let count = 0;
+        for (let i = 0; i < collectedStamps.length; i++) {
+            if (keys.includes(collectedStamps[i])) {
+                count++;
+                if (count === requiredCount) return i; // Returns the exact scan number (e.g., 5th stamp)
+            }
+        }
+        return -1; // Not unlocked yet
+    }
 
-// 2. Check for Physics combo
+    // 1. Math (Requires 2)
+    const mathKeys = ["SSGC120_Maths_h58p", "SSGC120_Maths_h58q", "SSGC120_Maths_h58r"];
+    const mathUnlockIndex = getUnlockIndex(mathKeys, 2);
+    const mathImg = document.getElementById('math-combo-img');
+    mathImg.style.display = (mathUnlockIndex !== -1) ? 'block' : 'none';
+    mathImg.style.order = mathUnlockIndex; // Tells the browser where to put it in line
+
+    // 2. Physics (Requires 3)
     const physicsKeys = ["SSGC120_Physics_n31w", "SSGC120_Physics_n31v", "SSGC120_Physics_n31u"];
-    const hasAllPhysics = physicsKeys.every(key => collectedStamps.includes(key));
-    document.getElementById('phy-combo-img').style.display = hasAllPhysics ? 'block' : 'none';
-    
-// 3. Check for Religious Education combo (Show if ANY 1 is scanned)
+    const phyUnlockIndex = getUnlockIndex(physicsKeys, 3);
+    const phyImg = document.getElementById('phy-combo-img');
+    phyImg.style.display = (phyUnlockIndex !== -1) ? 'block' : 'none';
+    phyImg.style.order = phyUnlockIndex;
+
+    // 3. RE (Requires 1)
     const reKeys = ["SSGC120_RE_t63v", "SSGC120_RE_t63w", "SSGC120_RE_t63u"];
-    const hasAnyRE = reKeys.some(key => collectedStamps.includes(key));
-    document.getElementById('re-combo-img').style.display = hasAnyRE ? 'block' : 'none';
+    const reUnlockIndex = getUnlockIndex(reKeys, 1);
+    const reImg = document.getElementById('re-combo-img');
+    reImg.style.display = (reUnlockIndex !== -1) ? 'block' : 'none';
+    reImg.style.order = reUnlockIndex;
     
 }
 
