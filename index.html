@@ -278,6 +278,7 @@
     <div class="bonus-container">
         <img id="math-combo-img" class="bonus-img" src="math.png" alt="Math Bonus">
         <img id="phy-combo-img" class="bonus-img" src="phy.png" alt="Physics Bonus">
+        <img id="re-combo-img" class="bonus-img" src="RE.png" alt="RE Bonus">
     </div>
     <script>
 const STORAGE_KEY = 'ssgc_scanned_stamps_120';
@@ -478,6 +479,12 @@ function updateUI() {
     const physicsKeys = ["SSGC120_Physics_n31w", "SSGC120_Physics_n31v", "SSGC120_Physics_n31u"];
     const hasAllPhysics = physicsKeys.every(key => collectedStamps.includes(key));
     document.getElementById('phy-combo-img').style.display = hasAllPhysics ? 'block' : 'none';
+    
+// 3. Check for Religious Education combo (Show if ANY 1 is scanned)
+    const reKeys = ["SSGC120_RE_t63v", "SSGC120_RE_t63w", "SSGC120_RE_t63u"];
+    const hasAnyRE = reKeys.some(key => collectedStamps.includes(key));
+    document.getElementById('re-combo-img').style.display = hasAnyRE ? 'block' : 'none';
+    
 }
 
 // Handle URL scanning
