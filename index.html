@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSGC 120th Anniversary Open Day Stamp Card</title>
+    <style>
+        :root {
+            --pale-blue: #e6f2ff;
+            --gold: #ffd700;
+            --dark-blue: #003366;
+        }
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--pale-blue);
+            color: var(--dark-blue);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 15px;
+            max-width: 600px;
+        }
+        .school-badge {
+            width: 80px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+        h1 {
+            font-size: 19px;
+            margin: 4px 0;
+            line-height: 1.3;
+        }
+        sup {
+            font-size: 0.6em;
+        }
+        
+        .progress-counter {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--dark-blue);
+            margin: 5px 0 15px 0;
+            background: #ffffff;
+            padding: 8px 18px;
+            border-radius: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        /* Optimized 9-column grid allows for much larger boxes */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(9, 35px);
+            grid-template-rows: repeat(5, 35px);
+            gap: 0; 
+            margin-top: 10px;
+            justify-content: center;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+        }
+        @media(min-width: 400px) {
+            .grid-container {
+                grid-template-columns: repeat(9, 44px);
+                grid-template-rows: repeat(5, 44px);
+            }
+        }
+        @media(min-width: 600px) {
+            .grid-container {
+                grid-template-columns: repeat(9, 55px);
+                grid-template-rows: repeat(5, 55px);
+            }
+        }
+
+        .stamp-box {
+            background: var(--dark-blue);
+            border: 1px solid var(--pale-blue); 
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 18px;
+        }
+        @media(min-width: 400px) {
+            .stamp-box { font-size: 24px; }
+        }
+        @media(min-width: 600px) {
+            .stamp-box { font-size: 32px; }
+        }
+
+        .stamp-box.unlocked {
+            background: linear-gradient(135deg, #ffe875, var(--gold));
+            box-shadow: inset 0 0 8px rgba(255, 120, 0, 0.4);
+            color: #000;
+        }
+
+        .stamp-box.prefilled {
+            background: linear-gradient(135deg, #ffe875, var(--gold));
+            box-shadow: inset 0 0 8px rgba(200, 50, 0, 0.4);
+        }
+
+        .congratulations {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+            max-width: 420px;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #c3e6cb;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+        .action-btn {
+            margin-top: 25px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            font-size: 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .action-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            opacity: 0.7;
+            box-shadow: none;
+        }
+        .action-btn:not(:disabled) {
+            background-color: #28a745;
+        }
+        .action-btn:not(:disabled):hover {
+            background-color: #218838;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-box {
+            background-color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 300px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .modal-text {
+            margin-bottom: 20px;
+            font-size: 15px;
+            line-height: 1.5;
+            color: var(--dark-blue);
+        }
+        .modal-buttons {
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+        }
+        .btn-cancel, .btn-confirm {
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .btn-cancel { background-color: #6c757d; }
+        .btn-confirm { background-color: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img class="school-badge" src="badge.png" alt="St. Stephen's Girls' College Badge" onerror="this.style.display='none'">
+        <h1>St. Stephen’s Girls’ College</h1>
+        <h1>120<sup>th</sup> Anniversary Open Day</h1>
+        <h1>聖士提反女子中學</h1>
+        <h1>一百二十周年校慶開放日</h1>
+        <p style="font-size: 15px; margin: 12px 0 3px 0; font-weight: bold; color: #003366;">Digital Reward Card 電子印花收集卡</p>
+    </div>
+
+    <div class="progress-counter" id="progress-text">
+        Stickers Collected 印花進度: 0 / 28
+    </div>
+
+    <div id="congrats-banner" class="congratulations">
+        🎉🎉 Congratulations! You have collected 28 stickers! Please proceed to Rooms M009 / M010 in the June Li Building to redeem your souvenirs.<br><br>
+        恭喜您！您已集齊28枚印花！請前往李余愛喜大樓M009/M010室領取紀念品。🎉🎉
+    </div>
+
+    <div class="grid-container">
+        <!-- Digit "1" (5 boxes: 0 prefilled, 5 empty) -->
+        <div class="stamp-box empty" style="grid-area: 1 / 1 / 2 / 2;"></div>
+        <div class="stamp-box empty" style="grid-area: 2 / 1 / 3 / 2;"></div>
+        <div class="stamp-box empty" style="grid-area: 3 / 1 / 4 / 2;"></div>
+        <div class="stamp-box empty" style="grid-area: 4 / 1 / 5 / 2;"></div>
+        <div class="stamp-box empty" style="grid-area: 5 / 1 / 6 / 2;"></div>
+
+        <!-- Digit "2" (11 boxes: 0 prefilled, 11 empty) -->
+        <div class="stamp-box empty" style="grid-area: 1 / 3 / 2 / 4;"></div>
+        <div class="stamp-box empty" style="grid-area: 1 / 4 / 2 / 5;"></div>
+        <div class="stamp-box empty" style="grid-area: 1 / 5 / 2 / 6;"></div>
+        <div class="stamp-box empty" style="grid-area: 2 / 5 / 3 / 6;"></div>
+        <div class="stamp-box empty" style="grid-area: 3 / 5 / 4 / 6;"></div>
+        <div class="stamp-box empty" style="grid-area: 3 / 4 / 4 / 5;"></div>
+        <div class="stamp-box empty" style="grid-area: 3 / 3 / 4 / 4;"></div>
+        <div class="stamp-box empty" style="grid-area: 4 / 3 / 5 / 4;"></div>
+        <div class="stamp-box empty" style="grid-area: 5 / 3 / 6 / 4;"></div>
+        <div class="stamp-box empty" style="grid-area: 5 / 4 / 6 / 5;"></div>
+        <div class="stamp-box empty" style="grid-area: 5 / 5 / 6 / 6;"></div>
+
+        <!-- Digit "0" (12 boxes: 0 prefilled, 12 empty) -->
+        <div class="stamp-box empty" style="grid-area: 1 / 7 / 2 / 8;"></div>
+        <div class="stamp-box empty" style="grid-area: 1 / 8 / 2 / 9;"></div>
+        <div class="stamp-box empty" style="grid-area: 1 / 9 / 2 / 10;"></div>
+        <div class="stamp-box empty" style="grid-area: 2 / 7 / 3 / 8;"></div>
+        <div class="stamp-box empty" style="grid-area: 2 / 9 / 3 / 10;"></div>
+        <div class="stamp-box empty" style="grid-area: 3 / 7 / 4 / 8;"></div>
+        <div class="stamp-box empty" style="grid-area: 3 / 9 / 4 / 10;"></div>
+        <div class="stamp-box empty" style="grid-area: 4 / 7 / 5 / 8;"></div>
+        <div class="stamp-box empty" style="grid-area: 4 / 9 / 5 / 10;"></div>
+        <div class="stamp-box empty" style="grid-area: 5 / 7 / 6 / 8;"></div>
+        <div class="stamp-box empty" style="grid-area: 5 / 8 / 6 / 9;"></div>
+        <div class="stamp-box empty" style="grid-area: 5 / 9 / 6 / 10;"></div>
+    </div>
+
+    <button id="reset-btn" class="action-btn" disabled>Redeem 兌換</button>
+
+    <div id="confirm-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-text">I confirm that I have redeemed the souvenir and agree to reset the reward card.<br><br>本人確認已兌換紀念品，並同意重設此印花收集卡。</div>
+            <div class="modal-buttons">
+                <button id="modal-cancel" class="btn-cancel">Cancel / 取消</button>
+                <button id="modal-confirm" class="btn-confirm">Confirm / 確認</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+const STORAGE_KEY = 'ssgc_scanned_stamps_120';
+const TARGET_STAMPS = 28;
+
+// 1. Replace the keys ("1", "2", etc.) with your secret password strings
+const stampEmojis = {
+    // 1. Archives Team
+    "SSGC120_Archives_a92x": "📜",
+"SSGC120_Archives_a92y": "🗃️",
+    // 2. Chinese Department / Chinese Language Activity Team / Chinese Drama
+    "SSGC120_Chinese_k38p": "🎭",
+"SSGC120_Chinese_k38q": "🏯",
+    // 3. Chinese History / CSD / History / Moral, Civic & National Education
+    "SSGC120_HisCivic_m71q": "🏛️",
+"SSGC120_HisCivic_m71p": "⛩️",
+    // 4. Geography Department
+    "SSGC120_Geog_v40z": "🌍",
+"SSGC120_Geog_v40x": "🗺️",
+    // 5. English Department
+    "SSGC120_English_x82n": "🔤",
+"SSGC120_English_x82m": "🗣️",
+    // 6. Music Department
+    "SSGC120_Music_w19b": "🎵",
+"SSGC120_Music_w19c": "🎼",
+    // 7. Student Achievements and Leadership (Gifted Ed / School Teams / SA)
+    "SSGC120_Leadership_p55k": "🏆",
+ "SSGC120_Leadership_p55l": "🎖️",
+    // 8. Library
+    "SSGC120_Library_r91m": "📚",
+"SSGC120_Library_r91n": "📖",
+    // 9. Religious Education Department
+    "SSGC120_RE_t63v": "⛪",
+"SSGC120_RE_t63w": "✝️",
+    // 10. Business, Accounting & Financial Studies / Economics
+    "SSGC120_BAFS_Econ_z28j": "📊 ",
+"SSGC120_BAFS_Econ_z28k": "💼 ",
+    // 11. Biology Department
+    "SSGC120_Bio_c14x": "🌿",
+"SSGC120_Bio_c14y": "🔬",
+    // 12. Chemistry Department
+    "SSGC120_Chem_d90q": "🧪",
+"SSGC120_Chem_d90p": "🥼",
+    // 13. Information & Communication Technology Department
+    "SSGC120_ICT_f72k": "💻",
+"SSGC120_ICT_f72l": "💾",
+    // 14. Mathematics Department
+    "SSGC120_Maths_h58p": "📐",
+ "SSGC120_Maths_h58q": "🎲",
+    // 15. Physics Department
+    "SSGC120_Physics_n31w": "⚛️",
+"SSGC120_Physics_n31v": "🧲",
+    // 16. STEAM Innovation Showcase
+    "SSGC120_STEAM_b84r": "🚀",
+"SSGC120_STEAM_b84s": "🤖",
+    // 17. Students’ Association Merchandise
+    "SSGC120_SA_Merch_g69y": "🛍️",
+"SSGC120_SA_Merch_g69x": "🛒",
+    // 18. Share Your Story
+    "SSGC120_Story_j47t": "💬",
+"SSGC120_Story_j47s": "✍",
+    // 19. Compassionate Student Support & Values in Action via PRIMES
+    "SSGC120_PRIMES_l83m": "🎓",
+"SSGC120_PRIMES_l83n": "🫰🏻",
+    // 20. Healthy Lifestyle Team / Physical & Health Education Department
+    "SSGC120_PE_Health_q52s": "🏋️‍♀️",
+ "SSGC120_PE_Health_q52t": "💪🏼",
+    // 21. Alumni Association / Parent-Teacher Association / Publications
+    "SSGC120_Alumni_PTA_u16v": "✉️",
+"SSGC120_Alumni_PTA_u16u": "👨‍👩‍👧",
+    // 22. Community Service Group
+    "SSGC120_ComService_e94k": "🫶🏻",
+  "SSGC120_ComService_e94l": "🏠",
+    // 23. Cultural Arts / Visual Arts Department
+    "SSGC120_VisualArts_s37p": "🎨",
+"SSGC120_VisualArts_s37q": "🖌️",
+    // 24. Global Experience Programme Team
+    "SSGC120_GlobalExp_y25z": "✈️",
+"SSGC120_GlobalExp_y25x": "🛫",
+    // 25. Other Learning Experiences Team
+    "SSGC120_OLE_w61x": "🧗‍♀️",
+"SSGC120_OLE_w61y": "💃",
+    // 26. Sustainable Development Team
+    "SSGC120_SustainDev_v88q": "🌴",
+"SSGC120_SustainDev_v88p": "♻️",
+    // 27. Tech & Living
+    "SSGC120_TL_z28j": "🍳 ",
+    "SSGC120_TL_z28k": "🧵 ",
+
+"SSGC120_K8eL2Wt":"👍",
+"SSGC120_mP7fB9x":"🎟️",
+"SSGC120_6zRw1qV":"🎉",
+"SSGC120_v4DkLxC":"🎊",
+"SSGC120_Jp9YtS2":"🧁",
+"SSGC120_4GfH2mK":"🍫",
+"SSGC120_C5xQnV7":"🥂",
+"SSGC120_8wPdB3m":"🍹",
+"SSGC120_N1sV6tR":"🍕",
+"SSGC120_Fj47mQz":"🌮",
+"SSGC120_pT2xZ9w":"🎤",
+"SSGC120_M7vB1ch":"🎸",
+"SSGC120_R6kP3yG":"🎷",
+"SSGC120_5sLf8qD":"🥁",
+"SSGC120_X2tN9zB":"🦄",
+"SSGC120_bC4mK7v":"🧸",
+"SSGC120_P8rD1wK":"🔔",
+"SSGC120_K3sF9tJ":"💎",
+"SSGC120_mQ2xZ7w":"💌",
+"SSGC120_F5hR1cY":"🎈"
+    
+
+};
+
+const congratsBanner = document.getElementById('congrats-banner');
+const resetBtn = document.getElementById('reset-btn');
+const progressText = document.getElementById('progress-text');
+const modal = document.getElementById('confirm-modal');
+const modalCancel = document.getElementById('modal-cancel');
+const modalConfirm = document.getElementById('modal-confirm');
+
+function getCollectedStamps() {
+    try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    } catch (e) {
+        return [];
+    }
+}
+
+function saveCollectedStamps(stampsArray) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(stampsArray));
+}
+
+function updateUI() {
+    const collectedStamps = getCollectedStamps();
+    const count = collectedStamps.length;
+    const emptyBoxes = document.querySelectorAll('.stamp-box.empty');
+
+    emptyBoxes.forEach((box, index) => {
+        if (index < count) {
+            box.classList.add('unlocked');
+            const stampId = collectedStamps[index];
+            box.innerText = stampEmojis[stampId] || "✨"; 
+        } else {
+            box.classList.remove('unlocked');
+            box.innerText = '';
+        }
+    });
+
+    progressText.innerText = `Stickers Collected 印花進度: ${Math.min(count, TARGET_STAMPS)} / ${TARGET_STAMPS}`;
+
+    if (count >= TARGET_STAMPS) {
+        congratsBanner.style.display = 'block';
+        resetBtn.disabled = false;
+    } else {
+        congratsBanner.style.display = 'none';
+        resetBtn.disabled = true;
+    }
+}
+
+// Handle URL scanning
+const urlParams = new URLSearchParams(window.location.search);
+const scannedStamp = urlParams.get('stamp');
+
+if (scannedStamp) {
+    // 2. Validate that the scanned password exists in our list
+    if (stampEmojis.hasOwnProperty(scannedStamp)) {
+        let collectedStamps = getCollectedStamps();
+        
+        if (!collectedStamps.includes(scannedStamp) && collectedStamps.length < TARGET_STAMPS) {
+            collectedStamps.push(scannedStamp);
+            saveCollectedStamps(collectedStamps);
+        }
+    }
+    
+    // Clear URL parameters so refreshing doesn't trigger rescans
+    window.history.replaceState(null, '', window.location.pathname);
+}
+
+updateUI();
+
+resetBtn.addEventListener('click', () => modal.style.display = 'flex');
+modalCancel.addEventListener('click', () => modal.style.display = 'none');
+
+modalConfirm.addEventListener('click', () => {
+    localStorage.removeItem(STORAGE_KEY);
+    modal.style.display = 'none';
+    updateUI();
+});
+    </script>
+</body>
+</html>
+
