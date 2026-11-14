@@ -183,6 +183,31 @@
         }
         .btn-cancel { background-color: #6c757d; }
         .btn-confirm { background-color: #dc3545; }
+        /* --- NEW COMBO GRAPHICS CSS --- */
+        .bonus-container {
+            position: fixed;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 100;
+        }
+        .bonus-img {
+            width: 80px;
+            height: auto;
+            display: none;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @media(max-width: 600px) {
+            .bonus-img { width: 60px; }
+        }
     </style>
 </head>
 <body>
@@ -194,7 +219,11 @@
         <h1>一百二十周年校慶開放日</h1>
         <p style="font-size: 15px; margin: 12px 0 3px 0; font-weight: bold; color: #003366;">Digital Reward Card 電子印花收集卡</p>
     </div>
-
+<!-- --- NEW COMBO GRAPHICS HTML --- -->
+    <div class="bonus-container">
+        <img id="math-combo-img" class="bonus-img" src="math.png" alt="Math Bonus">
+        <img id="phy-combo-img" class="bonus-img" src="phy.png" alt="Physics Bonus">
+    </div>
     <div class="progress-counter" id="progress-text">
         Stamps Collected 印花進度: 0 / 28
     </div>
@@ -438,6 +467,17 @@ function updateUI() {
         congratsBanner.style.display = 'none';
         resetBtn.disabled = true;
     }
+    // --- NEW COMBO LOGIC HERE ---
+    
+    // 1. Check for Mathematics combo
+    const mathKeys = ["SSGC120_Maths_h58p", "SSGC120_Maths_h58q", "SSGC120_Maths_h58r"];
+    const hasAllMath = mathKeys.every(key => collectedStamps.includes(key));
+    document.getElementById('math-combo-img').style.display = hasAllMath ? 'block' : 'none';
+
+    // 2. Check for Physics combo
+    const physicsKeys = ["SSGC120_Physics_n31w", "SSGC120_Physics_n31v", "SSGC120_Physics_n31u"];
+    const hasAllPhysics = physicsKeys.every(key => collectedStamps.includes(key));
+    document.getElementById('phy-combo-img').style.display = hasAllPhysics ? 'block' : 'none';
 }
 
 // Handle URL scanning
