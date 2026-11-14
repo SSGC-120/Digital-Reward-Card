@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SSGC 120th Anniversary Open Day Stamp Card</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root {
             --pale-blue: #e6f2ff;
@@ -288,142 +289,145 @@
 const STORAGE_KEY = 'ssgc_scanned_stamps_120';
 const TARGET_STAMPS = 28;
 
-// 1. Replace the keys ("1", "2", etc.) with your secret password strings
+// --- DEFINED COMBO KEYS GLOBALLY ---
+const mathKeys = ["SSGC120_Maths_h58p", "SSGC120_Maths_h58q", "SSGC120_Maths_h58r"];
+const physicsKeys = ["SSGC120_Physics_n31w", "SSGC120_Physics_n31v", "SSGC120_Physics_n31u"];
+const reKeys = ["SSGC120_RE_t63v", "SSGC120_RE_t63w", "SSGC120_RE_t63u"];
+
+// 1. Secret password strings
 const stampEmojis = {
     // 1. Archives Team
-"SSGC120_Archives_a92x": "📜",
-"SSGC120_Archives_a92y": "🗃️",
-"SSGC120_Archives_a92z": "⏳",
+    "SSGC120_Archives_a92x": "📜",
+    "SSGC120_Archives_a92y": "🗃️",
+    "SSGC120_Archives_a92z": "⏳",
     // 2. Chinese Department / Chinese Language Activity Team / Chinese Drama
-"SSGC120_Chinese_k38p": "🥢",
-"SSGC120_Chinese_k38q": "🧧",
-"SSGC120_Chinese_k38r": "🪭",
+    "SSGC120_Chinese_k38p": "🥢",
+    "SSGC120_Chinese_k38q": "🧧",
+    "SSGC120_Chinese_k38r": "🪭",
     // 3. Chinese History / CSD / History / Moral, Civic & National Education
-"SSGC120_HisCivic_m71q": "🏛️",
-"SSGC120_HisCivic_m71p": "⚖️",
-"SSGC120_HisCivic_m71r": "👸🏻",
-"SSGC120_CHisMCN_m71p": "🏮",
-"SSGC120_CHisMCN_m71q": "⛩️",
-"SSGC120_CHisMCN_m71r": "🐼",
+    "SSGC120_HisCivic_m71q": "🏛️",
+    "SSGC120_HisCivic_m71p": "⚖️",
+    "SSGC120_HisCivic_m71r": "👸🏻",
+    "SSGC120_CHisMCN_m71p": "🏮",
+    "SSGC120_CHisMCN_m71q": "⛩️",
+    "SSGC120_CHisMCN_m71r": "🐼",
     // 4. Geography Department
-"SSGC120_Geog_v40z": "🧭",
-"SSGC120_Geog_v40x": "🗺️",
-"SSGC120_Geog_v40y": "🌋",
+    "SSGC120_Geog_v40z": "🧭",
+    "SSGC120_Geog_v40x": "🗺️",
+    "SSGC120_Geog_v40y": "🌋",
     // 5. English Department
- "SSGC120_English_x82n": "🔤",
-"SSGC120_English_x82m": "🗣️",
-"SSGC120_English_x82o": "🎭",
+    "SSGC120_English_x82n": "🔤",
+    "SSGC120_English_x82m": "🗣️",
+    "SSGC120_English_x82o": "🎭",
     // 6. Music Department
-"SSGC120_Music_w19b": "🎵",
-"SSGC120_Music_w19c": "🎻",
-"SSGC120_Music_w19d": "🎹",
+    "SSGC120_Music_w19b": "🎵",
+    "SSGC120_Music_w19c": "🎻",
+    "SSGC120_Music_w19d": "🎹",
     // 7. Student Achievements and Leadership (Gifted Ed / School Teams / SA)
-"SSGC120_Leadership_p55k": "🏆",
-"SSGC120_Leadership_p55l": "🎖️",
-"SSGC120_Leadership_p55m": "👏",
+    "SSGC120_Leadership_p55k": "🏆",
+    "SSGC120_Leadership_p55l": "🎖️",
+    "SSGC120_Leadership_p55m": "👏",
     // 8. Library
-"SSGC120_Library_r91m": "📚",
-"SSGC120_Library_r91n": "📖",
-"SSGC120_Library_r91o": "🧐",
+    "SSGC120_Library_r91m": "📚",
+    "SSGC120_Library_r91n": "📖",
+    "SSGC120_Library_r91o": "🧐",
     // 9. Religious Education Department
-"SSGC120_RE_t63v": "⛪",
-"SSGC120_RE_t63w": "✝️",
-"SSGC120_RE_t63u": "🧔🏻‍♀️",
+    "SSGC120_RE_t63v": "⛪",
+    "SSGC120_RE_t63w": "✝️",
+    "SSGC120_RE_t63u": "🧔🏻‍♀️",
     // 10. Business, Accounting & Financial Studies / Economics
-"SSGC120_BAFS_Econ_z28j": "📊 ",
-"SSGC120_BAFS_Econ_z28k": "💼 ",
-"SSGC120_BAFS_Econ_z28l": "💵 ",
+    "SSGC120_BAFS_Econ_z28j": "📊 ",
+    "SSGC120_BAFS_Econ_z28k": "💼 ",
+    "SSGC120_BAFS_Econ_z28l": "💵 ",
     // 11. Biology Department
-"SSGC120_Bio_c14x": "🧬",
-"SSGC120_Bio_c14y": "🔬",
-"SSGC120_Bio_c14z": "🫀",
+    "SSGC120_Bio_c14x": "🧬",
+    "SSGC120_Bio_c14y": "🔬",
+    "SSGC120_Bio_c14z": "🫀",
     // 12. Chemistry Department
-"SSGC120_Chem_d90q": "🧪",
-"SSGC120_Chem_d90p": "🥼",
-"SSGC120_Chem_d90r": "🥽",
+    "SSGC120_Chem_d90q": "🧪",
+    "SSGC120_Chem_d90p": "🥼",
+    "SSGC120_Chem_d90r": "🥽",
     // 13. Information & Communication Technology Department
-"SSGC120_ICT_f72k": "💻",
-"SSGC120_ICT_f72l": "💾",
-"SSGC120_ICT_f72m": "👨🏻‍💻",
+    "SSGC120_ICT_f72k": "💻",
+    "SSGC120_ICT_f72l": "💾",
+    "SSGC120_ICT_f72m": "👨🏻‍💻",
     // 14. Mathematics Department
-"SSGC120_Maths_h58p": "🧮",
-"SSGC120_Maths_h58q": "📐",
-"SSGC120_Maths_h58r": "📱",
+    "SSGC120_Maths_h58p": "🧮",
+    "SSGC120_Maths_h58q": "📐",
+    "SSGC120_Maths_h58r": "📱",
     // 15. Physics Department
-"SSGC120_Physics_n31w": "🌈",
-"SSGC120_Physics_n31v": "🧲",
-"SSGC120_Physics_n31u": "⚛️",
+    "SSGC120_Physics_n31w": "🌈",
+    "SSGC120_Physics_n31v": "🧲",
+    "SSGC120_Physics_n31u": "⚛️",
     // 16. STEAM Innovation Showcase
-"SSGC120_STEAM_b84r": "🚀",
-"SSGC120_STEAM_b84s": "🤖",
-"SSGC120_STEAM_b84t": "👩🏻‍🔧",
+    "SSGC120_STEAM_b84r": "🚀",
+    "SSGC120_STEAM_b84s": "🤖",
+    "SSGC120_STEAM_b84t": "👩🏻‍🔧",
     // 17. Students’ Association Merchandise
-"SSGC120_SA_Merch_g69y": "🛍️",
-"SSGC120_SA_Merch_g69x": "🛒",
-"SSGC120_SA_Merch_g69z": "🎒",
+    "SSGC120_SA_Merch_g69y": "🛍️",
+    "SSGC120_SA_Merch_g69x": "🛒",
+    "SSGC120_SA_Merch_g69z": "🎒",
     // 18. Share Your Story
-"SSGC120_Story_j47t": "💬",
-"SSGC120_Story_j47s": "✍",
-"SSGC120_Story_j47r": "📌",
+    "SSGC120_Story_j47t": "💬",
+    "SSGC120_Story_j47s": "✍",
+    "SSGC120_Story_j47r": "📌",
     // 19. Compassionate Student Support & Values in Action via PRIMES
-"SSGC120_PRIMES_l83m": "🎓",
-"SSGC120_PRIMES_l83n": "🫰🏻",
-"SSGC120_PRIMES_l83l": "🫂",
+    "SSGC120_PRIMES_l83m": "🎓",
+    "SSGC120_PRIMES_l83n": "🫰🏻",
+    "SSGC120_PRIMES_l83l": "🫂",
     // 20. Healthy Lifestyle Team / Physical & Health Education Department
-"SSGC120_PE_Health_q52s": "🏊🏻‍♀️",
-"SSGC120_PE_Health_q52r": "🚴🏻‍♀️",
-"SSGC120_PE_Health_q52t": "🤾🏻‍♀️",
+    "SSGC120_PE_Health_q52s": "🏊🏻‍♀️",
+    "SSGC120_PE_Health_q52r": "🚴🏻‍♀️",
+    "SSGC120_PE_Health_q52t": "🤾🏻‍♀️",
     // 21. Alumni Association / Parent-Teacher Association / Publications
-"SSGC120_Alumni_PTA_u16v": "✉️",
-"SSGC120_Alumni_PTA_u16u": "👨‍👩‍👧",
-"SSGC120_Alumni_PTA_u16s": "📰",
+    "SSGC120_Alumni_PTA_u16v": "✉️",
+    "SSGC120_Alumni_PTA_u16u": "👨‍👩‍👧",
+    "SSGC120_Alumni_PTA_u16s": "📰",
     // 22. Community Service Group
-"SSGC120_ComService_e94k": "🫶🏻",
-"SSGC120_ComService_e94l": "🤝🏻",
-"SSGC120_ComService_e94m": "🙋🏻‍♀️",
+    "SSGC120_ComService_e94k": "🫶🏻",
+    "SSGC120_ComService_e94l": "🤝🏻",
+    "SSGC120_ComService_e94m": "🙋🏻‍♀️",
     // 23. Cultural Arts / Visual Arts Department
-"SSGC120_VisualArts_s37p": "🎨",
-"SSGC120_VisualArts_s37q": "🖌️",
-"SSGC120_VisualArts_s37r": "👩🏻‍🎨",
+    "SSGC120_VisualArts_s37p": "🎨",
+    "SSGC120_VisualArts_s37q": "🖌️",
+    "SSGC120_VisualArts_s37r": "👩🏻‍🎨",
     // 24. Global Experience Programme Team
-"SSGC120_GlobalExp_y25z": "✈️",
-"SSGC120_GlobalExp_y25x": "🛫",
-"SSGC120_GlobalExp_y25y": "🌐",
+    "SSGC120_GlobalExp_y25z": "✈️",
+    "SSGC120_GlobalExp_y25x": "🛫",
+    "SSGC120_GlobalExp_y25y": "🌐",
     // 25. Other Learning Experiences Team
-"SSGC120_OLE_w61x": "🧗‍♀️",
-"SSGC120_OLE_w61y": "💃",
-"SSGC120_OLE_w61z": "🏄🏻‍♀️",
+    "SSGC120_OLE_w61x": "🧗‍♀️",
+    "SSGC120_OLE_w61y": "💃",
+    "SSGC120_OLE_w61z": "🏄🏻‍♀️",
     // 26. Sustainable Development Team
-"SSGC120_SustainDev_v88q": "🌴",
-"SSGC120_SustainDev_v88p": "♻️",
-"SSGC120_SustainDev_v88r": "💚",
+    "SSGC120_SustainDev_v88q": "🌴",
+    "SSGC120_SustainDev_v88p": "♻️",
+    "SSGC120_SustainDev_v88r": "💚",
     // 27. Tech & Living
-"SSGC120_TL_z28j": "🪡 ",
-"SSGC120_TL_z28k": "🧵 ",
-"SSGC120_TL_z28l": "🍳 ",
+    "SSGC120_TL_z28j": "🪡 ",
+    "SSGC120_TL_z28k": "🧵 ",
+    "SSGC120_TL_z28l": "🍳 ",
 
-"SSGC120_K8eL2Wt":"👍",
-"SSGC120_mP7fB9x":"🎟️",
-"SSGC120_6zRw1qV":"🎉",
-"SSGC120_v4DkLxC":"🎊",
-"SSGC120_Jp9YtS2":"🥳",
-"SSGC120_4GfH2mK":"🤩",
-"SSGC120_C5xQnV7":"🥂",
-"SSGC120_8wPdB3m":"🌷",
-"SSGC120_N1sV6tR":"🎁",
-"SSGC120_Fj47mQz":"🎀",
-"SSGC120_pT2xZ9w":"🌼",
-"SSGC120_M7vB1ch":"🍾",
-"SSGC120_R6kP3yG":"🌹",
-"SSGC120_5sLf8qD":"🍷",
-"SSGC120_X2tN9zB":"🦄",
-"SSGC120_bC4mK7v":"✨",
-"SSGC120_P8rD1wK":"🔔",
-"SSGC120_K3sF9tJ":"💎",
-"SSGC120_mQ2xZ7w":"💌",
-"SSGC120_F5hR1cY":"🎈"
-    
-
+    "SSGC120_K8eL2Wt":"👍",
+    "SSGC120_mP7fB9x":"🎟️",
+    "SSGC120_6zRw1qV":"🎉",
+    "SSGC120_v4DkLxC":"🎊",
+    "SSGC120_Jp9YtS2":"🥳",
+    "SSGC120_4GfH2mK":"🤩",
+    "SSGC120_C5xQnV7":"🥂",
+    "SSGC120_8wPdB3m":"🌷",
+    "SSGC120_N1sV6tR":"🎁",
+    "SSGC120_Fj47mQz":"🎀",
+    "SSGC120_pT2xZ9w":"🌼",
+    "SSGC120_M7vB1ch":"🍾",
+    "SSGC120_R6kP3yG":"🌹",
+    "SSGC120_5sLf8qD":"🍷",
+    "SSGC120_X2tN9zB":"🦄",
+    "SSGC120_bC4mK7v":"✨",
+    "SSGC120_P8rD1wK":"🔔",
+    "SSGC120_K3sF9tJ":"💎",
+    "SSGC120_mQ2xZ7w":"💌",
+    "SSGC120_F5hR1cY":"🎈"
 };
 
 const congratsBanner = document.getElementById('congrats-banner');
@@ -432,6 +436,17 @@ const progressText = document.getElementById('progress-text');
 const modal = document.getElementById('confirm-modal');
 const modalCancel = document.getElementById('modal-cancel');
 const modalConfirm = document.getElementById('modal-confirm');
+
+// --- CELEBRATION FUNCTION ---
+function triggerCelebration() {
+    // Fires a burst of confetti using school colors (Gold and Dark Blue)
+    confetti({
+        particleCount: 150,
+        spread: 80,
+        origin: { y: 0.6 },
+        colors: ['#ffd700', '#003366', '#ffffff'] 
+    });
+}
 
 function getCollectedStamps() {
     try {
@@ -443,6 +458,29 @@ function getCollectedStamps() {
 
 function saveCollectedStamps(stampsArray) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stampsArray));
+}
+
+// Helper function to check if a combo requirement is met
+function checkComboStatus(stamps, keys, requiredCount) {
+    let count = 0;
+    for (let i = 0; i < stamps.length; i++) {
+        if (keys.includes(stamps[i])) {
+            count++;
+        }
+    }
+    return count >= requiredCount;
+}
+
+// Helper function to find exactly WHEN a combo was unlocked (for visual ordering)
+function getUnlockIndex(keys, requiredCount, collectedStamps) {
+    let count = 0;
+    for (let i = 0; i < collectedStamps.length; i++) {
+        if (keys.includes(collectedStamps[i])) {
+            count++;
+            if (count === requiredCount) return i; 
+        }
+    }
+    return -1; 
 }
 
 function updateUI() {
@@ -471,41 +509,25 @@ function updateUI() {
         resetBtn.disabled = true;
     }
   
-// --- NEW COMBO LOGIC HERE ---
+    // --- UPDATED COMBO VISUAL LOGIC ---
     
-    // Helper function to find exactly WHEN a combo was unlocked
-    function getUnlockIndex(keys, requiredCount) {
-        let count = 0;
-        for (let i = 0; i < collectedStamps.length; i++) {
-            if (keys.includes(collectedStamps[i])) {
-                count++;
-                if (count === requiredCount) return i; // Returns the exact scan number (e.g., 5th stamp)
-            }
-        }
-        return -1; // Not unlocked yet
-    }
-
     // 1. Math (Requires 2)
-    const mathKeys = ["SSGC120_Maths_h58p", "SSGC120_Maths_h58q", "SSGC120_Maths_h58r"];
-    const mathUnlockIndex = getUnlockIndex(mathKeys, 2);
+    const mathUnlockIndex = getUnlockIndex(mathKeys, 2, collectedStamps);
     const mathImg = document.getElementById('math-combo-img');
     mathImg.style.display = (mathUnlockIndex !== -1) ? 'block' : 'none';
-    mathImg.style.order = mathUnlockIndex; // Tells the browser where to put it in line
+    mathImg.style.order = mathUnlockIndex; 
 
     // 2. Physics (Requires 3)
-    const physicsKeys = ["SSGC120_Physics_n31w", "SSGC120_Physics_n31v", "SSGC120_Physics_n31u"];
-    const phyUnlockIndex = getUnlockIndex(physicsKeys, 3);
+    const phyUnlockIndex = getUnlockIndex(physicsKeys, 3, collectedStamps);
     const phyImg = document.getElementById('phy-combo-img');
     phyImg.style.display = (phyUnlockIndex !== -1) ? 'block' : 'none';
     phyImg.style.order = phyUnlockIndex;
 
     // 3. RE (Requires 1)
-    const reKeys = ["SSGC120_RE_t63v", "SSGC120_RE_t63w", "SSGC120_RE_t63u"];
-    const reUnlockIndex = getUnlockIndex(reKeys, 1);
+    const reUnlockIndex = getUnlockIndex(reKeys, 1, collectedStamps);
     const reImg = document.getElementById('re-combo-img');
     reImg.style.display = (reUnlockIndex !== -1) ? 'block' : 'none';
     reImg.style.order = reUnlockIndex;
-    
 }
 
 // Handle URL scanning
@@ -513,13 +535,40 @@ const urlParams = new URLSearchParams(window.location.search);
 const scannedStamp = urlParams.get('stamp');
 
 if (scannedStamp) {
-    // 2. Validate that the scanned password exists in our list
     if (stampEmojis.hasOwnProperty(scannedStamp)) {
         let collectedStamps = getCollectedStamps();
         
         if (!collectedStamps.includes(scannedStamp) && collectedStamps.length < TARGET_STAMPS) {
+            
+            // 1. Check status BEFORE adding the new stamp
+            const mathWasDone = checkComboStatus(collectedStamps, mathKeys, 2);
+            const phyWasDone = checkComboStatus(collectedStamps, physicsKeys, 3);
+            const reWasDone = checkComboStatus(collectedStamps, reKeys, 1);
+            
+            // 2. Add the stamp
             collectedStamps.push(scannedStamp);
             saveCollectedStamps(collectedStamps);
+            
+            // 3. Check status AFTER adding the new stamp
+            const mathIsDone = checkComboStatus(collectedStamps, mathKeys, 2);
+            const phyIsDone = checkComboStatus(collectedStamps, physicsKeys, 3);
+            const reIsDone = checkComboStatus(collectedStamps, reKeys, 1);
+            
+            // 4. Trigger celebration if something NEW was unlocked
+            let shouldCelebrate = false;
+            
+            // Did a combo just flip from false to true?
+            if (!mathWasDone && mathIsDone) shouldCelebrate = true;
+            if (!phyWasDone && phyIsDone) shouldCelebrate = true;
+            if (!reWasDone && reIsDone) shouldCelebrate = true;
+            
+            // Did they just hit the final 28 target?
+            if (collectedStamps.length === TARGET_STAMPS) shouldCelebrate = true;
+
+            if (shouldCelebrate) {
+                // Short delay so they can see the stamp appear on screen before confetti fires
+                setTimeout(triggerCelebration, 300); 
+            }
         }
     }
     
