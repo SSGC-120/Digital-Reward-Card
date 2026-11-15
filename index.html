@@ -408,7 +408,7 @@ const stampEmojis = {
     "SSGC120_TL_z28j": "🪡 ",
     "SSGC120_TL_z28k": "🧵 ",
     "SSGC120_TL_z28l": "🍳 ",
-
+    // PS
     "SSGC120_K8eL2Wt":"👍",
     "SSGC120_mP7fB9x":"🎟️",
     "SSGC120_6zRw1qV":"🎉",
@@ -419,6 +419,7 @@ const stampEmojis = {
     "SSGC120_8wPdB3m":"🌷",
     "SSGC120_N1sV6tR":"🎁",
     "SSGC120_Fj47mQz":"🎀",
+    // KG
     "SSGC120_pT2xZ9w":"🌼",
     "SSGC120_M7vB1ch":"🍾",
     "SSGC120_R6kP3yG":"🌹",
@@ -428,7 +429,24 @@ const stampEmojis = {
     "SSGC120_P8rD1wK":"🔔",
     "SSGC120_K3sF9tJ":"💎",
     "SSGC120_mQ2xZ7w":"💌",
-    "SSGC120_F5hR1cY":"🎈"
+    "SSGC120_F5hR1cY":"🎈",
+    "SSGC120_h4lg1kh":"👩🏻‍🏫",
+// Backup
+"SSGC120_oAhb2nA":"🧑🏻‍🏫",
+"SSGC120_T7t9kXI":"👨🏻‍🏫",
+"SSGC120_z0DweIa":"🖇️",
+"SSGC120_AnSR5Ud":"👩🏻‍🎓",
+"SSGC120_NEq8ICY":"🧑🏻‍🎓",
+"SSGC120_22hcHMD":"🖋️",
+"SSGC120_pUhCFdQ":"🖊️",
+"SSGC120_KoohS3q":"🪶",
+"SSGC120_JGBKPFu":"📋",
+"SSGC120_y7w4MbO":"🖍️",
+"SSGC120_rcykG6k":"⌛",
+"SSGC120_JB4YSEC":"✌️",
+"SSGC120_PNrgZb0":"😍",
+"SSGC120_TmtjscF":"🔋",
+"SSGC120_dohFNim":"🌈"
 };
 
 const congratsBanner = document.getElementById('congrats-banner');
@@ -519,7 +537,7 @@ function updateUI() {
     mathImg.style.order = mathUnlockIndex; 
 
     // 2. Physics (Requires 3)
-    const phyUnlockIndex = getUnlockIndex(physicsKeys, 3, collectedStamps);
+    const phyUnlockIndex = getUnlockIndex(physicsKeys, 4, collectedStamps);
     const phyImg = document.getElementById('phy-combo-img');
     phyImg.style.display = (phyUnlockIndex !== -1) ? 'block' : 'none';
     phyImg.style.order = phyUnlockIndex;
