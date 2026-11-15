@@ -284,6 +284,8 @@
         <img id="math-combo-img" class="bonus-img" src="math.png" alt="Math Bonus">
         <img id="phy-combo-img" class="bonus-img" src="phy.png" alt="Physics Bonus">
         <img id="re-combo-img" class="bonus-img" src="RE.png" alt="RE Bonus">
+        <img id="hist-combo-img" class="bonus-img" src="hist.png" alt="HisCivic Bonus">
+
     </div>
     
     <script>
@@ -294,6 +296,8 @@ const TARGET_STAMPS = 28;
 const mathKeys = ["SSGC120_Maths_h58p", "SSGC120_Maths_h58q", "SSGC120_Maths_h58r"];
 const physicsKeys = ["SSGC120_Physics_n31w", "SSGC120_Physics_n31v", "SSGC120_Physics_n31u"];
 const reKeys = ["SSGC120_RE_t63v", "SSGC120_RE_t63w", "SSGC120_RE_t63u"];
+const histKeys = ["SSGC120_HisCivic_m71q", "SSGC120_HisCivic_m71p", "SSGC120_HisCivic_m71r"];
+
 
 // 1. Secret password strings
 const stampEmojis = {
@@ -543,10 +547,17 @@ function updateUI() {
     phyImg.style.order = phyUnlockIndex;
 
     // 3. RE (Requires 1)
-    const reUnlockIndex = getUnlockIndex(reKeys, 4, collectedStamps);
+    const reUnlockIndex = getUnlockIndex(reKeys, 1, collectedStamps);
     const reImg = document.getElementById('re-combo-img');
     reImg.style.display = (reUnlockIndex !== -1) ? 'block' : 'none';
     reImg.style.order = reUnlockIndex;
+
+        // 4. HisCivic (Requires 1)
+    const histUnlockIndex = getUnlockIndex(histKeys, 1, collectedStamps);
+    const histImg = document.getElementById('hist-combo-img');
+    histImg.style.display = (histUnlockIndex !== -1) ? 'block' : 'none';
+    histImg.style.order = histUnlockIndex;
+
 }
 
 // Handle URL scanning
@@ -562,7 +573,8 @@ if (scannedStamp) {
             // 1. Check status BEFORE adding the new stamp
             const mathWasDone = checkComboStatus(collectedStamps, mathKeys, 2);
             const phyWasDone = checkComboStatus(collectedStamps, physicsKeys, 3);
-            const reWasDone = checkComboStatus(collectedStamps, reKeys, 4);
+            const reWasDone = checkComboStatus(collectedStamps, reKeys, 1);
+            const histWasDone = checkComboStatus(collectedStamps, histKeys, 1);
             
             // 2. Add the stamp
             collectedStamps.push(scannedStamp);
@@ -571,7 +583,8 @@ if (scannedStamp) {
             // 3. Check status AFTER adding the new stamp
             const mathIsDone = checkComboStatus(collectedStamps, mathKeys, 2);
             const phyIsDone = checkComboStatus(collectedStamps, physicsKeys, 3);
-            const reIsDone = checkComboStatus(collectedStamps, reKeys, 4);
+            const reIsDone = checkComboStatus(collectedStamps, reKeys, 1);
+             const histWasDone = checkComboStatus(collectedStamps, histKeys, 1);
             
             // 4. Trigger celebration if something NEW was unlocked
             let shouldCelebrate = false;
@@ -580,6 +593,7 @@ if (scannedStamp) {
             if (!mathWasDone && mathIsDone) shouldCelebrate = true;
             if (!phyWasDone && phyIsDone) shouldCelebrate = true;
             if (!reWasDone && reIsDone) shouldCelebrate = true;
+            if (!histWasDone && histIsDone) shouldCelebrate = true;
             
             // Did they just hit the final 28 target?
             if (collectedStamps.length === TARGET_STAMPS) shouldCelebrate = true;
