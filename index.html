@@ -288,6 +288,10 @@
         <img id="mcne-combo-img" class="bonus-img" src="mcne.png" alt="CHisMCN Bonus">
         <img id="eng-combo-img" class="bonus-img" src="eng.png" alt="Eng Bonus">
         <img id="mus-combo-img" class="bonus-img" src="mus.png" alt="Music Bonus">
+        <img id="bio-combo-img" class="bonus-img" src="bio.png" alt="Bio Bonus">
+        <img id="econ-combo-img" class="bonus-img" src="econ.png" alt="Econ Bonus">
+        <img id="phe-combo-img" class="bonus-img" src="phe.png" alt="PHE Bonus">
+        <img id="gep-combo-img" class="bonus-img" src="gep.png" alt="GEP Bonus">
 
     </div>
     
@@ -580,7 +584,31 @@ function updateUI() {
     const musImg = document.getElementById('mus-combo-img');
     musImg.style.display = (musUnlockIndex !== -1) ? 'block' : 'none';
     musImg.style.order = musUnlockIndex;
+    
+       // 8. Bio (Requires 1)
+    const bioUnlockIndex = getUnlockIndex(bioKeys, 1, collectedStamps);
+    const bioImg = document.getElementById('bio-combo-img');
+    bioImg.style.display = (bioUnlockIndex !== -1) ? 'block' : 'none';
+    bioImg.style.order = bioUnlockIndex;
 
+           // 9. Econ (Requires 1)
+    const econUnlockIndex = getUnlockIndex(econKeys, 1, collectedStamps);
+    const econImg = document.getElementById('econ-combo-img');
+    econImg.style.display = (econUnlockIndex !== -1) ? 'block' : 'none';
+    econImg.style.order = econUnlockIndex;
+
+           // 10. GEP (Requires 1)
+    const gepUnlockIndex = getUnlockIndex(gepKeys, 1, collectedStamps);
+    const gepImg = document.getElementById('gep-combo-img');
+    gepImg.style.display = (gepUnlockIndex !== -1) ? 'block' : 'none';
+    gepImg.style.order = gepUnlockIndex;
+
+           // 11. PHE (Requires 1)
+    const pheUnlockIndex = getUnlockIndex(pheKeys, 1, collectedStamps);
+    const pheImg = document.getElementById('phe-combo-img');
+    pheImg.style.display = (pheUnlockIndex !== -1) ? 'block' : 'none';
+    pheImg.style.order = pheUnlockIndex;
+    
 }
 
 // Handle URL scanning
@@ -601,6 +629,10 @@ if (scannedStamp) {
             const mcneWasDone = checkComboStatus(collectedStamps, mcneKeys, 1);
             const engWasDone = checkComboStatus(collectedStamps, engKeys, 1);
             const musWasDone = checkComboStatus(collectedStamps, musKeys, 1);
+            const bioWasDone = checkComboStatus(collectedStamps, bioKeys, 1);
+            const econWasDone = checkComboStatus(collectedStamps, econKeys, 1);
+            const gepWasDone = checkComboStatus(collectedStamps, gepKeys, 1);
+            const pheWasDone = checkComboStatus(collectedStamps, pheKeys, 1);
             
             // 2. Add the stamp
             collectedStamps.push(scannedStamp);
@@ -614,6 +646,10 @@ if (scannedStamp) {
             const mcneIsDone = checkComboStatus(collectedStamps, mcneKeys, 1);
             const engIsDone = checkComboStatus(collectedStamps, engKeys, 1);
             const musIsDone = checkComboStatus(collectedStamps, musKeys, 1);
+            const bioIsDone = checkComboStatus(collectedStamps, bioKeys, 1);
+            const econIsDone = checkComboStatus(collectedStamps, econKeys, 1);
+            const gepIsDone = checkComboStatus(collectedStamps, gepKeys, 1);
+            const pheIsDone = checkComboStatus(collectedStamps, pheKeys, 1);
             
             // 4. Trigger celebration if something NEW was unlocked
             let shouldCelebrate = false;
@@ -626,6 +662,10 @@ if (scannedStamp) {
             if (!mcneWasDone && mcneIsDone) shouldCelebrate = true;
             if (!engWasDone && engIsDone) shouldCelebrate = true;
             if (!musWasDone && musIsDone) shouldCelebrate = true;
+            if (!bioWasDone && bioIsDone) shouldCelebrate = true;
+            if (!econWasDone && econIsDone) shouldCelebrate = true;
+            if (!gepWasDone && gepIsDone) shouldCelebrate = true;
+            if (!pheWasDone && pheIsDone) shouldCelebrate = true;
             
             // Did they just hit the final 28 target?
             if (collectedStamps.length === TARGET_STAMPS) shouldCelebrate = true;
