@@ -599,7 +599,7 @@ function updateUI() {
        // 2. Chin (Requires 2)
     const chiUnlockIndex = getUnlockIndex(chiKeys, 2, collectedStamps);
     const chiImg = document.getElementById('chi-combo-img');
-    chiImg.style.display = (chiUnlockIndex !== -1 && !redeemedCombos.includes('chicombo-img')) ? 'block' : 'none';
+    chiImg.style.display = (chiUnlockIndex !== -1 && !redeemedCombos.includes('chi-combo-img')) ? 'block' : 'none';
     chiImg.style.order = chiUnlockIndex; 
 
     // 3. HisCivic (Requires 2)
