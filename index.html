@@ -601,17 +601,17 @@ function updateUI() {
     bioImg.style.display = (bioUnlockIndex !== -1) ? 'block' : 'none';
     bioImg.style.order = bioUnlockIndex;
 
-           // 10. GEP (Requires 1)
-    const gepUnlockIndex = getUnlockIndex(gepKeys, 1, collectedStamps);
-    const gepImg = document.getElementById('gep-combo-img');
-    gepImg.style.display = (gepUnlockIndex !== -1) ? 'block' : 'none';
-    gepImg.style.order = gepUnlockIndex;
-
-           // 11. PHE (Requires 1)
+        // 10. PHE (Requires 1)
     const pheUnlockIndex = getUnlockIndex(pheKeys, 1, collectedStamps);
     const pheImg = document.getElementById('phe-combo-img');
     pheImg.style.display = (pheUnlockIndex !== -1) ? 'block' : 'none';
     pheImg.style.order = pheUnlockIndex;
+    
+           // 11. GEP (Requires 1)
+    const gepUnlockIndex = getUnlockIndex(gepKeys, 1, collectedStamps);
+    const gepImg = document.getElementById('gep-combo-img');
+    gepImg.style.display = (gepUnlockIndex !== -1) ? 'block' : 'none';
+    gepImg.style.order = gepUnlockIndex;
     
 }
 
@@ -633,10 +633,11 @@ if (scannedStamp) {
             const mcneWasDone = checkComboStatus(collectedStamps, mcneKeys, 1);
             const engWasDone = checkComboStatus(collectedStamps, engKeys, 1);
             const musWasDone = checkComboStatus(collectedStamps, musKeys, 1);
-            const bioWasDone = checkComboStatus(collectedStamps, bioKeys, 1);
             const econWasDone = checkComboStatus(collectedStamps, econKeys, 1);
-            const gepWasDone = checkComboStatus(collectedStamps, gepKeys, 1);
+            const bioWasDone = checkComboStatus(collectedStamps, bioKeys, 1);
             const pheWasDone = checkComboStatus(collectedStamps, pheKeys, 1);
+            const gepWasDone = checkComboStatus(collectedStamps, gepKeys, 1);
+    
             
             // 2. Add the stamp
             collectedStamps.push(scannedStamp);
@@ -650,10 +651,10 @@ if (scannedStamp) {
             const mcneIsDone = checkComboStatus(collectedStamps, mcneKeys, 1);
             const engIsDone = checkComboStatus(collectedStamps, engKeys, 1);
             const musIsDone = checkComboStatus(collectedStamps, musKeys, 1);
-            const bioIsDone = checkComboStatus(collectedStamps, bioKeys, 1);
             const econIsDone = checkComboStatus(collectedStamps, econKeys, 1);
-            const gepIsDone = checkComboStatus(collectedStamps, gepKeys, 1);
+            const bioIsDone = checkComboStatus(collectedStamps, bioKeys, 1);
             const pheIsDone = checkComboStatus(collectedStamps, pheKeys, 1);
+            const gepIsDone = checkComboStatus(collectedStamps, gepKeys, 1);
             
             // 4. Trigger celebration if something NEW was unlocked
             let shouldCelebrate = false;
@@ -666,10 +667,10 @@ if (scannedStamp) {
             if (!mcneWasDone && mcneIsDone) shouldCelebrate = true;
             if (!engWasDone && engIsDone) shouldCelebrate = true;
             if (!musWasDone && musIsDone) shouldCelebrate = true;
-            if (!bioWasDone && bioIsDone) shouldCelebrate = true;
             if (!econWasDone && econIsDone) shouldCelebrate = true;
-            if (!gepWasDone && gepIsDone) shouldCelebrate = true;
+            if (!bioWasDone && bioIsDone) shouldCelebrate = true;
             if (!pheWasDone && pheIsDone) shouldCelebrate = true;
+            if (!gepWasDone && gepIsDone) shouldCelebrate = true;
             
             // Did they just hit the final 28 target?
             if (collectedStamps.length === TARGET_STAMPS) shouldCelebrate = true;
