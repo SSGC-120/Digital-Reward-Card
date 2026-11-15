@@ -185,14 +185,15 @@
         }
         .btn-cancel { background-color: #6c757d; }
         .btn-confirm { background-color: #dc3545; }
-    /* --- UPDATED COMBO GRAPHICS CSS --- */
+        
+        /* --- UPDATED COMBO GRAPHICS CSS --- */
         .bonus-container {
             display: flex;
-            justify-content: center; /* Centers them side-by-side */
+            justify-content: center; 
             align-items: center;
             flex-wrap: wrap;
-            gap: 25px; /* Space between the two graphics */
-            margin-top: 25px; /* Pushes them below the button */
+            gap: 25px; 
+            margin-top: 25px; 
             padding-bottom: 20px;
             width: 100%;
         }
@@ -203,6 +204,11 @@
             display: none;
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
             animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer; /* Makes it clear they can tap it */
+            transition: transform 0.2s ease;
+        }
+        .bonus-img:active {
+            transform: scale(0.9); /* Adds a little "press" effect when tapped */
         }
         @keyframes popIn {
             0% { transform: scale(0); opacity: 0; }
@@ -270,6 +276,7 @@
 
     <button id="reset-btn" class="action-btn" disabled>Redeem 兌換</button>
 
+    <!-- Main 28-Stamp Reset Modal -->
     <div id="confirm-modal" class="modal-overlay">
         <div class="modal-box">
             <div class="modal-text">I confirm that I have redeemed the souvenir and agree to reset the reward card.<br><br>本人確認已兌換紀念品，並同意重設此印花收集卡。</div>
@@ -279,7 +286,19 @@
             </div>
         </div>
     </div>
-<!-- --- NEW COMBO GRAPHICS HTML --- -->
+
+    <!-- NEW Combo Prize Redemption Modal -->
+    <div id="combo-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-text">I confirm that I have redeemed this souvenir.<br><br>我確認已兌換此紀念品。</div>
+            <div class="modal-buttons">
+                <button id="combo-cancel" class="btn-cancel">Cancel / 取消</button>
+                <button id="combo-confirm" class="btn-confirm">Confirm / 確認</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- --- NEW COMBO GRAPHICS HTML --- -->
     <div class="bonus-container">
         <img id="math-combo-img" class="bonus-img" src="math.png" alt="Math Bonus">
         <img id="phy-combo-img" class="bonus-img" src="phy.png" alt="Physics Bonus">
@@ -292,11 +311,11 @@
         <img id="bio-combo-img" class="bonus-img" src="bio.png" alt="Bio Bonus">
         <img id="phe-combo-img" class="bonus-img" src="phe.png" alt="PHE Bonus">
         <img id="gep-combo-img" class="bonus-img" src="gep.png" alt="GEP Bonus">
-
     </div>
     
     <script>
 const STORAGE_KEY = 'ssgc_scanned_stamps_120';
+const COMBO_REDEEMED_KEY = 'ssgc_redeemed_combos_120'; // New storage key for redeemed combo prizes
 const TARGET_STAMPS = 28;
 
 // --- DEFINED COMBO KEYS GLOBALLY ---
@@ -469,9 +488,17 @@ const stampEmojis = {
 const congratsBanner = document.getElementById('congrats-banner');
 const resetBtn = document.getElementById('reset-btn');
 const progressText = document.getElementById('progress-text');
+
+// Modals
 const modal = document.getElementById('confirm-modal');
 const modalCancel = document.getElementById('modal-cancel');
 const modalConfirm = document.getElementById('modal-confirm');
+
+const comboModal = document.getElementById('combo-modal');
+const comboCancel = document.getElementById('combo-cancel');
+const comboConfirm = document.getElementById('combo-confirm');
+
+let currentRedeemingComboId = null; // Keeps track of which combo prize they are tapping
 
 // --- CELEBRATION FUNCTION ---
 function triggerCelebration() {
@@ -494,6 +521,18 @@ function getCollectedStamps() {
 
 function saveCollectedStamps(stampsArray) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stampsArray));
+}
+
+function getRedeemedCombos() {
+    try {
+        return JSON.parse(localStorage.getItem(COMBO_REDEEMED_KEY)) || [];
+    } catch (e) {
+        return [];
+    }
+}
+
+function saveRedeemedCombos(redeemedArray) {
+    localStorage.setItem(COMBO_REDEEMED_KEY, JSON.stringify(redeemedArray));
 }
 
 // Helper function to check if a combo requirement is met
@@ -545,74 +584,74 @@ function updateUI() {
         resetBtn.disabled = true;
     }
   
-    // --- UPDATED COMBO VISUAL LOGIC ---
+    // --- UPDATED COMBO VISUAL LOGIC WITH REDEMPTION CHECK ---
+    const redeemedCombos = getRedeemedCombos();
     
     // 1. Math (Requires 2)
     const mathUnlockIndex = getUnlockIndex(mathKeys, 2, collectedStamps);
     const mathImg = document.getElementById('math-combo-img');
-    mathImg.style.display = (mathUnlockIndex !== -1) ? 'block' : 'none';
+    mathImg.style.display = (mathUnlockIndex !== -1 && !redeemedCombos.includes('math-combo-img')) ? 'block' : 'none';
     mathImg.style.order = mathUnlockIndex; 
 
     // 2. Physics (Requires 3)
     const phyUnlockIndex = getUnlockIndex(physicsKeys, 3, collectedStamps);
     const phyImg = document.getElementById('phy-combo-img');
-    phyImg.style.display = (phyUnlockIndex !== -1) ? 'block' : 'none';
+    phyImg.style.display = (phyUnlockIndex !== -1 && !redeemedCombos.includes('phy-combo-img')) ? 'block' : 'none';
     phyImg.style.order = phyUnlockIndex;
 
     // 3. RE (Requires 1)
     const reUnlockIndex = getUnlockIndex(reKeys, 1, collectedStamps);
     const reImg = document.getElementById('re-combo-img');
-    reImg.style.display = (reUnlockIndex !== -1) ? 'block' : 'none';
+    reImg.style.display = (reUnlockIndex !== -1 && !redeemedCombos.includes('re-combo-img')) ? 'block' : 'none';
     reImg.style.order = reUnlockIndex;
 
-        // 4. HisCivic (Requires 1)
+    // 4. HisCivic (Requires 1)
     const histUnlockIndex = getUnlockIndex(histKeys, 1, collectedStamps);
     const histImg = document.getElementById('hist-combo-img');
-    histImg.style.display = (histUnlockIndex !== -1) ? 'block' : 'none';
+    histImg.style.display = (histUnlockIndex !== -1 && !redeemedCombos.includes('hist-combo-img')) ? 'block' : 'none';
     histImg.style.order = histUnlockIndex;
 
-        // 5. CHisMCN (Requires 1)
+    // 5. CHisMCN (Requires 1)
     const mcneUnlockIndex = getUnlockIndex(mcneKeys, 1, collectedStamps);
     const mcneImg = document.getElementById('mcne-combo-img');
-    mcneImg.style.display = (mcneUnlockIndex !== -1) ? 'block' : 'none';
+    mcneImg.style.display = (mcneUnlockIndex !== -1 && !redeemedCombos.includes('mcne-combo-img')) ? 'block' : 'none';
     mcneImg.style.order = mcneUnlockIndex;
 
-       // 6. Eng (Requires 1)
+    // 6. Eng (Requires 1)
     const engUnlockIndex = getUnlockIndex(engKeys, 1, collectedStamps);
     const engImg = document.getElementById('eng-combo-img');
-    engImg.style.display = (engUnlockIndex !== -1) ? 'block' : 'none';
+    engImg.style.display = (engUnlockIndex !== -1 && !redeemedCombos.includes('eng-combo-img')) ? 'block' : 'none';
     engImg.style.order = engUnlockIndex;
     
-       // 7. Music (Requires 1)
+    // 7. Music (Requires 1)
     const musUnlockIndex = getUnlockIndex(musKeys, 1, collectedStamps);
     const musImg = document.getElementById('mus-combo-img');
-    musImg.style.display = (musUnlockIndex !== -1) ? 'block' : 'none';
+    musImg.style.display = (musUnlockIndex !== -1 && !redeemedCombos.includes('mus-combo-img')) ? 'block' : 'none';
     musImg.style.order = musUnlockIndex;
 
-      // 8. Econ (Requires 1)
+    // 8. Econ (Requires 1)
     const econUnlockIndex = getUnlockIndex(econKeys, 1, collectedStamps);
     const econImg = document.getElementById('econ-combo-img');
-    econImg.style.display = (econUnlockIndex !== -1) ? 'block' : 'none';
+    econImg.style.display = (econUnlockIndex !== -1 && !redeemedCombos.includes('econ-combo-img')) ? 'block' : 'none';
     econImg.style.order = econUnlockIndex;
 
-       // 9. Bio (Requires 1)
+    // 9. Bio (Requires 1)
     const bioUnlockIndex = getUnlockIndex(bioKeys, 1, collectedStamps);
     const bioImg = document.getElementById('bio-combo-img');
-    bioImg.style.display = (bioUnlockIndex !== -1) ? 'block' : 'none';
+    bioImg.style.display = (bioUnlockIndex !== -1 && !redeemedCombos.includes('bio-combo-img')) ? 'block' : 'none';
     bioImg.style.order = bioUnlockIndex;
 
-        // 10. PHE (Requires 1)
+    // 10. PHE (Requires 1)
     const pheUnlockIndex = getUnlockIndex(pheKeys, 1, collectedStamps);
     const pheImg = document.getElementById('phe-combo-img');
-    pheImg.style.display = (pheUnlockIndex !== -1) ? 'block' : 'none';
+    pheImg.style.display = (pheUnlockIndex !== -1 && !redeemedCombos.includes('phe-combo-img')) ? 'block' : 'none';
     pheImg.style.order = pheUnlockIndex;
     
-           // 11. GEP (Requires 1)
+    // 11. GEP (Requires 1)
     const gepUnlockIndex = getUnlockIndex(gepKeys, 1, collectedStamps);
     const gepImg = document.getElementById('gep-combo-img');
-    gepImg.style.display = (gepUnlockIndex !== -1) ? 'block' : 'none';
+    gepImg.style.display = (gepUnlockIndex !== -1 && !redeemedCombos.includes('gep-combo-img')) ? 'block' : 'none';
     gepImg.style.order = gepUnlockIndex;
-    
 }
 
 // Handle URL scanning
@@ -685,17 +724,52 @@ if (scannedStamp) {
     window.history.replaceState(null, '', window.location.pathname);
 }
 
+// Initial UI Load
 updateUI();
 
+// --- MODAL EVENT LISTENERS ---
+
+// 1. Main 28-Stamp Reset Modal
 resetBtn.addEventListener('click', () => modal.style.display = 'flex');
 modalCancel.addEventListener('click', () => modal.style.display = 'none');
-
 modalConfirm.addEventListener('click', () => {
+    // Clear both the main stamps and the redeemed combo list when they finish the whole card
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(COMBO_REDEEMED_KEY);
     modal.style.display = 'none';
     updateUI();
 });
+
+// 2. Combo Prize Redemption Modal
+const allComboImages = document.querySelectorAll('.bonus-img');
+allComboImages.forEach(img => {
+    img.addEventListener('click', function() {
+        currentRedeemingComboId = this.id;
+        comboModal.style.display = 'flex';
+    });
+});
+
+comboCancel.addEventListener('click', () => {
+    comboModal.style.display = 'none';
+    currentRedeemingComboId = null;
+});
+
+comboConfirm.addEventListener('click', () => {
+    if (currentRedeemingComboId) {
+        const redeemed = getRedeemedCombos();
+        
+        // Add this combo's ID to the redeemed list if it's not already there
+        if (!redeemed.includes(currentRedeemingComboId)) {
+            redeemed.push(currentRedeemingComboId);
+            saveRedeemedCombos(redeemed);
+        }
+        
+        comboModal.style.display = 'none';
+        currentRedeemingComboId = null;
+        updateUI(); // This will re-run and hide the specific combo image because it is now in the redeemed list
+    }
+});
+
     </script>
 </body>
 </html>
-
