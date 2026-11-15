@@ -288,8 +288,8 @@
         <img id="mcne-combo-img" class="bonus-img" src="mcne.png" alt="CHisMCN Bonus">
         <img id="eng-combo-img" class="bonus-img" src="eng.png" alt="Eng Bonus">
         <img id="mus-combo-img" class="bonus-img" src="mus.png" alt="Music Bonus">
-        <img id="bio-combo-img" class="bonus-img" src="bio.png" alt="Bio Bonus">
         <img id="econ-combo-img" class="bonus-img" src="econ.png" alt="Econ Bonus">
+        <img id="bio-combo-img" class="bonus-img" src="bio.png" alt="Bio Bonus">
         <img id="phe-combo-img" class="bonus-img" src="phe.png" alt="PHE Bonus">
         <img id="gep-combo-img" class="bonus-img" src="gep.png" alt="GEP Bonus">
 
@@ -307,6 +307,10 @@ const histKeys = ["SSGC120_HisCivic_m71q", "SSGC120_HisCivic_m71p", "SSGC120_His
 const mcneKeys = ["SGC120_CHisMCN_m71p", "SSGC120_CHisMCN_m71q", "SSGC120_CHisMCN_m71r"];
 const engKeys = ["SSGC120_English_x82n", "SSGC120_English_x82m", "SSGC120_English_x82o"];
 const musKeys = ["SSGC120_Music_w19b", "SSGC120_Music_w19c", "SSGC120_Music_w19d"];
+const bioKeys = ["SSGC120_Bio_c14x", "SSGC120_Bio_c14y", "SSGC120_Bio_c14z"];
+const econKeys = ["SSGC120_BAFS_Econ_z28j", "SSGC120_BAFS_Econ_z28k", "SSGC120_BAFS_Econ_z28l"];
+const pheKeys = ["SSGC120_PE_Health_q52s", "SSGC120_PE_Health_q52r", "SSGC120_PE_Health_q52t"];       
+const gepKeys = ["SSGC120_GlobalExp_y25z", "SSGC120_GlobalExp_y25x", "SSGC120_GlobalExp_y25y"];
 
 // 1. Secret password strings
 const stampEmojis = {
@@ -584,18 +588,18 @@ function updateUI() {
     const musImg = document.getElementById('mus-combo-img');
     musImg.style.display = (musUnlockIndex !== -1) ? 'block' : 'none';
     musImg.style.order = musUnlockIndex;
-    
-       // 8. Bio (Requires 1)
-    const bioUnlockIndex = getUnlockIndex(bioKeys, 1, collectedStamps);
-    const bioImg = document.getElementById('bio-combo-img');
-    bioImg.style.display = (bioUnlockIndex !== -1) ? 'block' : 'none';
-    bioImg.style.order = bioUnlockIndex;
 
-           // 9. Econ (Requires 1)
+      // 8. Econ (Requires 1)
     const econUnlockIndex = getUnlockIndex(econKeys, 1, collectedStamps);
     const econImg = document.getElementById('econ-combo-img');
     econImg.style.display = (econUnlockIndex !== -1) ? 'block' : 'none';
     econImg.style.order = econUnlockIndex;
+
+       // 9. Bio (Requires 1)
+    const bioUnlockIndex = getUnlockIndex(bioKeys, 1, collectedStamps);
+    const bioImg = document.getElementById('bio-combo-img');
+    bioImg.style.display = (bioUnlockIndex !== -1) ? 'block' : 'none';
+    bioImg.style.order = bioUnlockIndex;
 
            // 10. GEP (Requires 1)
     const gepUnlockIndex = getUnlockIndex(gepKeys, 1, collectedStamps);
