@@ -286,6 +286,7 @@
         <img id="re-combo-img" class="bonus-img" src="RE.png" alt="RE Bonus">
         <img id="hist-combo-img" class="bonus-img" src="hist.png" alt="HisCivic Bonus">
         <img id="mcne-combo-img" class="bonus-img" src="mcne.png" alt="CHisMCN Bonus">
+        <img id="eng-combo-img" class="bonus-img" src="eng.png" alt="Eng Bonus">
 
     </div>
     
@@ -299,6 +300,7 @@ const physicsKeys = ["SSGC120_Physics_n31w", "SSGC120_Physics_n31v", "SSGC120_Ph
 const reKeys = ["SSGC120_RE_t63v", "SSGC120_RE_t63w", "SSGC120_RE_t63u"];
 const histKeys = ["SSGC120_HisCivic_m71q", "SSGC120_HisCivic_m71p", "SSGC120_HisCivic_m71r"];
 const mcneKeys = ["SGC120_CHisMCN_m71p", "SSGC120_CHisMCN_m71q", "SSGC120_CHisMCN_m71r"];
+const engKeys = ["SSGC120_English_x82n", "SSGC120_English_x82m", "SSGC120_English_x82o"];
 
 // 1. Secret password strings
 const stampEmojis = {
@@ -565,6 +567,12 @@ function updateUI() {
     mcneImg.style.display = (mcneUnlockIndex !== -1) ? 'block' : 'none';
     mcneImg.style.order = mcneUnlockIndex;
 
+       // 6. Eng (Requires 1)
+    const engUnlockIndex = getUnlockIndex(engKeys, 1, collectedStamps);
+    const engImg = document.getElementById('eng-combo-img');
+    engImg.style.display = (engUnlockIndex !== -1) ? 'block' : 'none';
+    engImg.style.order = engUnlockIndex;
+
 }
 
 // Handle URL scanning
@@ -583,6 +591,7 @@ if (scannedStamp) {
             const reWasDone = checkComboStatus(collectedStamps, reKeys, 1);
             const histWasDone = checkComboStatus(collectedStamps, histKeys, 1);
             const mcneWasDone = checkComboStatus(collectedStamps, mcneKeys, 1);
+            const engWasDone = checkComboStatus(collectedStamps, engKeys, 1);
             
             // 2. Add the stamp
             collectedStamps.push(scannedStamp);
@@ -594,6 +603,7 @@ if (scannedStamp) {
             const reIsDone = checkComboStatus(collectedStamps, reKeys, 1);
             const histIsDone = checkComboStatus(collectedStamps, histKeys, 1);
             const mcneIsDone = checkComboStatus(collectedStamps, mcneKeys, 1);
+            const engIsDone = checkComboStatus(collectedStamps, engKeys, 1);
             
             // 4. Trigger celebration if something NEW was unlocked
             let shouldCelebrate = false;
@@ -604,6 +614,7 @@ if (scannedStamp) {
             if (!reWasDone && reIsDone) shouldCelebrate = true;
             if (!histWasDone && histIsDone) shouldCelebrate = true;
             if (!mcneWasDone && mcneIsDone) shouldCelebrate = true;
+            if (!engWasDone && engIsDone) shouldCelebrate = true;
             
             // Did they just hit the final 28 target?
             if (collectedStamps.length === TARGET_STAMPS) shouldCelebrate = true;
