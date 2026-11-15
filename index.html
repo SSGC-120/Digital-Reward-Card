@@ -537,13 +537,13 @@ function updateUI() {
     mathImg.style.order = mathUnlockIndex; 
 
     // 2. Physics (Requires 3)
-    const phyUnlockIndex = getUnlockIndex(physicsKeys, 4, collectedStamps);
+    const phyUnlockIndex = getUnlockIndex(physicsKeys, 3, collectedStamps);
     const phyImg = document.getElementById('phy-combo-img');
     phyImg.style.display = (phyUnlockIndex !== -1) ? 'block' : 'none';
     phyImg.style.order = phyUnlockIndex;
 
     // 3. RE (Requires 1)
-    const reUnlockIndex = getUnlockIndex(reKeys, 1, collectedStamps);
+    const reUnlockIndex = getUnlockIndex(reKeys, 4, collectedStamps);
     const reImg = document.getElementById('re-combo-img');
     reImg.style.display = (reUnlockIndex !== -1) ? 'block' : 'none';
     reImg.style.order = reUnlockIndex;
@@ -562,7 +562,7 @@ if (scannedStamp) {
             // 1. Check status BEFORE adding the new stamp
             const mathWasDone = checkComboStatus(collectedStamps, mathKeys, 2);
             const phyWasDone = checkComboStatus(collectedStamps, physicsKeys, 3);
-            const reWasDone = checkComboStatus(collectedStamps, reKeys, 1);
+            const reWasDone = checkComboStatus(collectedStamps, reKeys, 4);
             
             // 2. Add the stamp
             collectedStamps.push(scannedStamp);
@@ -571,7 +571,7 @@ if (scannedStamp) {
             // 3. Check status AFTER adding the new stamp
             const mathIsDone = checkComboStatus(collectedStamps, mathKeys, 2);
             const phyIsDone = checkComboStatus(collectedStamps, physicsKeys, 3);
-            const reIsDone = checkComboStatus(collectedStamps, reKeys, 1);
+            const reIsDone = checkComboStatus(collectedStamps, reKeys, 4);
             
             // 4. Trigger celebration if something NEW was unlocked
             let shouldCelebrate = false;
