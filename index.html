@@ -285,6 +285,10 @@
         <img id="phy-combo-img" class="bonus-img" src="phy.png" alt="Physics Bonus">
         <img id="re-combo-img" class="bonus-img" src="RE.png" alt="RE Bonus">
     </div>
+
+    <!-- Add this right above your <script> tag -->
+<audio id="hymn-audio" src="school-hymn.mp3" preload="auto"></audio>
+    
     <script>
 const STORAGE_KEY = 'ssgc_scanned_stamps_120';
 const TARGET_STAMPS = 28;
@@ -436,6 +440,8 @@ const progressText = document.getElementById('progress-text');
 const modal = document.getElementById('confirm-modal');
 const modalCancel = document.getElementById('modal-cancel');
 const modalConfirm = document.getElementById('modal-confirm');
+        // ADD THIS LINE:
+const hymnAudio = document.getElementById('hymn-audio');
 
 // --- CELEBRATION FUNCTION ---
 function triggerCelebration() {
@@ -564,7 +570,10 @@ if (scannedStamp) {
             
             // Did they just hit the final 28 target?
             if (collectedStamps.length === TARGET_STAMPS) shouldCelebrate = true;
-
+// ADD THESE LINES TO PLAY THE HYMN
+                hymnAudio.play().catch(function(error) {
+                    console.log("Browser autoplay blocked the audio");
+                });
             if (shouldCelebrate) {
                 // Short delay so they can see the stamp appear on screen before confetti fires
                 setTimeout(triggerCelebration, 300); 
@@ -584,6 +593,9 @@ modalCancel.addEventListener('click', () => modal.style.display = 'none');
 modalConfirm.addEventListener('click', () => {
     localStorage.removeItem(STORAGE_KEY);
     modal.style.display = 'none';
+    // ADD THESE TWO LINES TO STOP AND REWIND
+    hymnAudio.pause();
+    hymnAudio.currentTime = 0;
     updateUI();
 });
     </script>
