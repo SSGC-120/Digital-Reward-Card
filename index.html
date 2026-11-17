@@ -335,6 +335,28 @@ const physicsKeys = ["SSGC120_Physics_n31w", "SSGC120_Physics_n31v", "SSGC120_Ph
 const pheKeys = ["SSGC120_PE_Health_q52s", "SSGC120_PE_Health_q52r", "SSGC120_PE_Health_q52t"];       
 const gepKeys = ["SSGC120_GlobalExp_y25z", "SSGC120_GlobalExp_y25x", "SSGC120_GlobalExp_y25y"];
 
+        // HELPER 1: Checks if a specific combo has enough stamps
+function checkComboStatus(stamps, keys, req) {
+    const matchCount = keys.filter(key => stamps.includes(key)).length;
+    return matchCount >= req;
+}
+
+// HELPER 2: Figures out exactly WHEN a combo was unlocked so they sort chronologically
+function getUnlockIndex(keys, req, stamps) {
+    let count = 0;
+    for (let i = 0; i < stamps.length; i++) {
+        if (keys.includes(stamps[i])) {
+            count++;
+            if (count === req) return i; // Returns the position it was unlocked
+        }
+    }
+    return -1; // -1 means not unlocked yet
+}
+
+// HELPER 3: Safely fetches the redeemed combos from localStorage
+function getRedeemedCombos() {
+    return JSON.parse(localStorage.getItem('ssgc_redeemed_combos_120')) || [];
+}
         // Master array for all combo logic
 const combos = [
     { keys: arcKeys, req: 2, img: 'arc-combo-img' },
