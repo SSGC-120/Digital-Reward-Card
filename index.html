@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSGC 120th Anniversary Open Day Stamp Card</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --pale-blue: #e6f2ff;
+            --gold: #ffd700;
+            --dark-blue: #003366;
+        }
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--pale-blue);
+            color: var(--dark-blue);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 15px;
+            max-width: 600px;
+        }
+        .school-badge {
+            width: 80px;
+            height: auto;
+            object-fit: contain;
+            margin-bottom: 10px;
+        }
+        h1 {
+            font-size: 19px;
+            margin: 4px 0;
+            line-height: 1.3;
+        }
+        sup {
+            font-size: 0.6em;
+        }
+        
+        .progress-counter {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--dark-blue);
+            margin: 5px 0 15px 0;
+            background: #ffffff;
+            padding: 8px 18px;
+            border-radius: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(9, 35px);
+            grid-template-rows: repeat(5, 35px);
+            gap: 0; 
+            margin-top: 10px;
+            justify-content: center;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+        }
+        @media(min-width: 400px) {
+            .grid-container {
+                grid-template-columns: repeat(9, 44px);
+                grid-template-rows: repeat(5, 44px);
+            }
+        }
+        @media(min-width: 600px) {
+            .grid-container {
+                grid-template-columns: repeat(9, 55px);
+                grid-template-rows: repeat(5, 55px);
+            }
+        }
+
+        .stamp-box {
+            background: var(--dark-blue);
+            border: 1px solid var(--pale-blue); 
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 18px;
+        }
+        @media(min-width: 400px) {
+            .stamp-box { font-size: 24px; }
+        }
+        @media(min-width: 600px) {
+            .stamp-box { font-size: 32px; }
+        }
+
+        .stamp-box.unlocked {
+            background: linear-gradient(135deg, #ffe875, var(--gold));
+            box-shadow: inset 0 0 8px rgba(255, 120, 0, 0.4);
+            color: #000;
+        }
+
+        .congratulations {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+            max-width: 420px;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #c3e6cb;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+        .action-btn {
+            margin-top: 25px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            font-size: 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .action-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            opacity: 0.7;
+            box-shadow: none;
+        }
+        .action-btn:not(:disabled) {
+            background-color: #28a745;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-box {
+            background-color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 300px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .modal-text {
+            margin-bottom: 20px;
+            font-size: 15px;
+            line-height: 1.5;
+            color: var(--dark-blue);
+        }
+        .modal-buttons {
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+        }
+        .btn-cancel, .btn-confirm {
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .btn-cancel { background-color: #6c757d; }
+        .btn-confirm { background-color: #dc3545; }
+        
+        .bonus-container {
+            display: flex;
+            justify-content: center; 
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 25px; 
+            margin-top: 25px; 
+            padding-bottom: 20px;
+            width: 100%;
+        }
+        .bonus-img {
+            width: 80px;
+            height: auto;
+            object-fit: contain;
+            display: none;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer; 
+            transition: transform 0.2s ease;
+        }
+        .bonus-img:active {
+            transform: scale(0.9); 
+        }
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @media(max-width: 600px) {
+            .bonus-img { width: 65px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img class="school-badge" src="badge.png" alt="St. Stephen's Girls' College Badge" onerror="this.style.display='none'">
+        <h1>St. Stephen’s Girls’ College</h1>
+        <h1>120<sup>th</sup> Anniversary Open Day</h1>
+        <h1>聖士提反女子中學</h1>
+        <h1>一百二十周年校慶開放日</h1>
+        <p style="font-size: 15px; margin: 12px 0 3px 0; font-weight: bold; color: #003366;">Digital Reward Card 電子印花收集卡</p>
+    </div>
+
+    <div class="progress-counter" id="progress-text">
+        Stamps Collected 印花進度: 0 / 28
+    </div>
+
+    <div id="congrats-banner" class="congratulations">
+        🎉🎉 Congratulations! You have collected 28 stamps! Please proceed to Rooms M009 / M010 in the June Li Building to redeem your souvenirs.<br><br>
+        恭喜您！您已集齊28枚印花！請前往李余愛喜大樓M009/M010室領取紀念品。🎉🎉
+    </div>
+
+    <div class="grid-container">
+        <!-- Digit "1" (5 boxes: 0 prefilled, 5 empty) -->
+        <div class="stamp-box empty" style="grid-area: 1 / 1 / 2 / 2;"></div>
+        <div class="stamp-box empty" style="grid-area: 2 / 1 / 3 / 2;"></div>
+        <div class="stamp-box empty" style="grid-area: 3 / 1 / 4 / 2;"></div>
+        <div class="stamp-box empty" style="grid-area: 4 / 1 / 5 / 2;"></div>
+        <div class="stamp-box empty" style="grid-area: 5 / 1 / 6 / 2;"></div>
+
+        <!-- Digit "2" (11 boxes: 0 prefilled, 11 empty) -->
+        <div class="stamp-box empty" style="grid-area: 1 / 3 / 2 / 4;"></div>
+        <div class="stamp-box empty" style="grid-area: 1 / 4 / 2 / 5;"></div>
+        <div class="stamp-box empty" style="grid-area: 1 / 5 / 2 / 6;"></div>
+        <div class="stamp-box empty" style="grid-area: 2 / 5 / 3 / 6;"></div>
+        <div class="stamp-box empty" style="grid-area: 3 / 5 / 4 / 6;"></div>
+        <div class="stamp-box empty" style="grid-area: 3 / 4 / 4 / 5;"></div>
+        <div class="stamp-box empty" style="grid-area: 3 / 3 / 4 / 4;"></div>
+        <div class="stamp-box empty" style="grid-area: 4 / 3 / 5 / 4;"></div>
+        <div class="stamp-box empty" style="grid-area: 5 / 3 / 6 / 4;"></div>
+        <div class="stamp-box empty" style="grid-area: 5 / 4 / 6 / 5;"></div>
+        <div class="stamp-box empty" style="grid-area: 5 / 5 / 6 / 6;"></div>
+
+        <!-- Digit "0" (12 boxes: 0 prefilled, 12 empty) -->
+        <div class="stamp-box empty" style="grid-area: 1 / 7 / 2 / 8;"></div>
+        <div class="stamp-box empty" style="grid-area: 1 / 8 / 2 / 9;"></div>
+        <div class="stamp-box empty" style="grid-area: 1 / 9 / 2 / 10;"></div>
+        <div class="stamp-box empty" style="grid-area: 2 / 7 / 3 / 8;"></div>
+        <div class="stamp-box empty" style="grid-area: 2 / 9 / 3 / 10;"></div>
+        <div class="stamp-box empty" style="grid-area: 3 / 7 / 4 / 8;"></div>
+        <div class="stamp-box empty" style="grid-area: 3 / 9 / 4 / 10;"></div>
+        <div class="stamp-box empty" style="grid-area: 4 / 7 / 5 / 8;"></div>
+        <div class="stamp-box empty" style="grid-area: 4 / 9 / 5 / 10;"></div>
+        <div class="stamp-box empty" style="grid-area: 5 / 7 / 6 / 8;"></div>
+        <div class="stamp-box empty" style="grid-area: 5 / 8 / 6 / 9;"></div>
+        <div class="stamp-box empty" style="grid-area: 5 / 9 / 6 / 10;"></div>
+    </div>
+
+    <button id="reset-btn" class="action-btn" disabled>Redeem 兌換</button>
+
+    <div id="confirm-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-text">I confirm that I have redeemed the souvenir and agree to reset the reward card.<br><br>本人確認已兌換紀念品，並同意重設此印花收集卡。</div>
+            <div class="modal-buttons">
+                <button id="modal-cancel" class="btn-cancel">Cancel / 取消</button>
+                <button id="modal-confirm" class="btn-confirm">Confirm / 確認</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="combo-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-text">I confirm that I have redeemed this souvenir.<br><br>我確認已兌換此紀念品。</div>
+            <div class="modal-buttons">
+                <button id="combo-cancel" class="btn-cancel">Cancel / 取消</button>
+                <button id="combo-confirm" class="btn-confirm">Confirm / 確認</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="bonus-container">
+        <img id="arc-combo-img" class="bonus-img" src="arc.png" alt="Archives Bonus">
+        <img id="chi-combo-img" class="bonus-img" src="chi.png" alt="Chinese Bonus">
+        <img id="hist-combo-img" class="bonus-img" src="hist.png" alt="HisCivic Bonus">
+        <img id="mcne-combo-img" class="bonus-img" src="mcne.png" alt="CHisMCN Bonus">
+        <img id="eng-combo-img" class="bonus-img" src="eng.png" alt="Eng Bonus">
+        <img id="mus-combo-img" class="bonus-img" src="mus.png" alt="Music Bonus">     
+        <img id="re-combo-img" class="bonus-img" src="RE.png" alt="RE Bonus">      
+        <img id="econ-combo-img" class="bonus-img" src="econ.png" alt="Econ Bonus">
+        <img id="bio-combo-img" class="bonus-img" src="bio.png" alt="Bio Bonus">        
+        <img id="math-combo-img" class="bonus-img" src="math.png" alt="Math Bonus">
+        <img id="phy-combo-img" class="bonus-img" src="phy.png" alt="Physics Bonus">
+        <img id="phe-combo-img" class="bonus-img" src="phe.png" alt="PHE Bonus">
+        <img id="gep-combo-img" class="bonus-img" src="gep.png" alt="GEP Bonus">
+    </div>
+    
+<script>
+const STORAGE_KEY = 'ssgc_scanned_stamps_120';
+const COMBO_REDEEMED_KEY = 'ssgc_redeemed_combos_120';
+const TARGET_STAMPS = 28;
+
+// --- DEFINED COMBO KEYS GLOBALLY ---
+const arcKeys = ["SSGC120_Archives_a92x", "SSGC120_Archives_a92y", "SSGC120_Archives_a92z"];
+const chiKeys = ["SSGC120_Chinese_k38p", "SSGC120_Chinese_k38q", "SSGC120_Chinese_k38r"];
+const histKeys = ["SSGC120_HisCivic_m71q", "SSGC120_HisCivic_m71p", "SSGC120_HisCivic_m71r"];
+const mcneKeys = ["SSGC120_CHisMCN_m71p", "SSGC120_CHisMCN_m71q", "SSGC120_CHisMCN_m71r"];
+const engKeys = ["SSGC120_English_x82n", "SSGC120_English_x82m", "SSGC120_English_x82o"];
+const musKeys = ["SSGC120_Music_w19b", "SSGC120_Music_w19c", "SSGC120_Music_w19d"];
+const reKeys = ["SSGC120_RE_t63v", "SSGC120_RE_t63w", "SSGC120_RE_t63u"];  
+const econKeys = ["SSGC120_BAFS_Econ_z28j", "SSGC120_BAFS_Econ_z28k", "SSGC120_BAFS_Econ_z28l"];        
+const bioKeys = ["SSGC120_Bio_c14x", "SSGC120_Bio_c14y", "SSGC120_Bio_c14z"];        
+const mathKeys = ["SSGC120_Maths_h58p", "SSGC120_Maths_h58q", "SSGC120_Maths_h58r"];
+const physicsKeys = ["SSGC120_Physics_n31w", "SSGC120_Physics_n31v", "SSGC120_Physics_n31u"];
+const pheKeys = ["SSGC120_PE_Health_q52s", "SSGC120_PE_Health_q52r", "SSGC120_PE_Health_q52t"];       
+const gepKeys = ["SSGC120_GlobalExp_y25z", "SSGC120_GlobalExp_y25x", "SSGC120_GlobalExp_y25y"];
+
+const combos = [
+    { keys: arcKeys, req: 2, img: 'arc-combo-img' },
+    { keys: chiKeys, req: 2, img: 'chi-combo-img' },
+    { keys: histKeys, req: 2, img: 'hist-combo-img' },
+    { keys: mcneKeys, req: 2, img: 'mcne-combo-img' },
+    { keys: engKeys, req: 3, img: 'eng-combo-img' },
+    { keys: musKeys, req: 1, img: 'mus-combo-img' },
+    { keys: reKeys, req: 1, img: 're-combo-img' },
+    { keys: econKeys, req: 2, img: 'econ-combo-img' },
+    { keys: bioKeys, req: 1, img: 'bio-combo-img' },
+    { keys: mathKeys, req: 2, img: 'math-combo-img' },
+    { keys: physicsKeys, req: 3, img: 'phy-combo-img' },
+    { keys: pheKeys, req: 3, img: 'phe-combo-img' },
+    { keys: gepKeys, req: 3, img: 'gep-combo-img' }
+];
+
+const stampEmojis = {
+    "SSGC120_Archives_a92x": "📜", "SSGC120_Archives_a92y": "🗃️", "SSGC120_Archives_a92z": "⏳",
+    "SSGC120_Chinese_k38p": "🥢", "SSGC120_Chinese_k38q": "🧧", "SSGC120_Chinese_k38r": "🪭",
+    "SSGC120_HisCivic_m71q": "🏛️", "SSGC120_HisCivic_m71p": "⚖️", "SSGC120_HisCivic_m71r": "👸🏻",
+    "SSGC120_CHisMCN_m71p": "🏮", "SSGC120_CHisMCN_m71q": "⛩️", "SSGC120_CHisMCN_m71r": "🐼",
+    "SSGC120_Geog_v40z": "🧭", "SSGC120_Geog_v40x": "🗺️", "SSGC120_Geog_v40y": "🌋",
+    "SSGC120_English_x82n": "🔤", "SSGC120_English_x82m": "🗣️", "SSGC120_English_x82o": "🎭",
+    "SSGC120_Music_w19b": "🎵", "SSGC120_Music_w19c": "🎻", "SSGC120_Music_w19d": "🎹",
+    "SSGC120_Leadership_p55k": "🏆", "SSGC120_Leadership_p55l": "🎖️", "SSGC120_Leadership_p55m": "👏",
+    "SSGC120_Library_r91m": "📚", "SSGC120_Library_r91n": "📖", "SSGC120_Library_r91o": "🧐",
+    "SSGC120_RE_t63v": "⛪", "SSGC120_RE_t63w": "✝️", "SSGC120_RE_t63u": "🧔🏻‍♀️",
+    "SSGC120_BAFS_Econ_z28j": "📊 ", "SSGC120_BAFS_Econ_z28k": "💼 ", "SSGC120_BAFS_Econ_z28l": "💵 ",
+    "SSGC120_Bio_c14x": "🧬", "SSGC120_Bio_c14y": "🔬", "SSGC120_Bio_c14z": "🫀",
+    "SSGC120_Chem_d90q": "🧪", "SSGC120_Chem_d90p": "🥼", "SSGC120_Chem_d90r": "🥽",
+    "SSGC120_ICT_f72k": "💻", "SSGC120_ICT_f72l": "💾", "SSGC120_ICT_f72m": "👨🏻‍💻",
+    "SSGC120_Maths_h58p": "🧮", "SSGC120_Maths_h58q": "📐", "SSGC120_Maths_h58r": "📱",
+    "SSGC120_Physics_n31w": "🪀", "SSGC120_Physics_n31v": "🧲", "SSGC120_Physics_n31u": "⚛️",
+    "SSGC120_STEAM_b84r": "🚀", "SSGC120_STEAM_b84s": "🤖", "SSGC120_STEAM_b84t": "👩🏻‍🔧",
+    "SSGC120_SA_Merch_g69y": "🛍️", "SSGC120_SA_Merch_g69x": "🛒", "SSGC120_SA_Merch_g69z": "🎒",
+    "SSGC120_Story_j47t": "💬", "SSGC120_Story_j47s": "✍", "SSGC120_Story_j47r": "📌",
+    "SSGC120_PRIMES_l83m": "🎓", "SSGC120_PRIMES_l83n": "🫰🏻", "SSGC120_PRIMES_l83l": "🫂",
+    "SSGC120_PE_Health_q52s": "🏊🏻‍♀️", "SSGC120_PE_Health_q52r": "🚴🏻‍♀️", "SSGC120_PE_Health_q52t": "🤾🏻‍♀️",
+    "SSGC120_Alumni_PTA_u16v": "✉️", "SSGC120_Alumni_PTA_u16u": "👨‍👩‍👧", "SSGC120_Alumni_PTA_u16s": "📰",
+    "SSGC120_ComService_e94k": "🫶🏻", "SSGC120_ComService_e94l": "🤝🏻", "SSGC120_ComService_e94m": "🙋🏻‍♀️",
+    "SSGC120_VisualArts_s37p": "🎨", "SSGC120_VisualArts_s37q": "🖌️", "SSGC120_VisualArts_s37r": "👩🏻‍🎨",
+    "SSGC120_GlobalExp_y25z": "✈️", "SSGC120_GlobalExp_y25x": "🛫", "SSGC120_GlobalExp_y25y": "🌐",
+    "SSGC120_OLE_w61x": "🧗‍♀️", "SSGC120_OLE_w61y": "💃", "SSGC120_OLE_w61z": "🏄🏻‍♀️",
+    "SSGC120_SustainDev_v88q": "🌴", "SSGC120_SustainDev_v88p": "♻️", "SSGC120_SustainDev_v88r": "💚",
+    "SSGC120_TL_z28j": "🪡 ", "SSGC120_TL_z28k": "🧵 ", "SSGC120_TL_z28l": "🍳 ",
+    "SSGC120_K8eL2Wt":"👍", "SSGC120_mP7fB9x":"🎟️", "SSGC120_6zRw1qV":"🎉", "SSGC120_v4DkLxC":"🎊",
+    "SSGC120_Jp9YtS2":"🥳", "SSGC120_4GfH2mK":"🤩", "SSGC120_C5xQnV7":"🥂", "SSGC120_8wPdB3m":"🌷",
+    "SSGC120_N1sV6tR":"🎁", "SSGC120_Fj47mQz":"🎀", "SSGC120_pT2xZ9w":"🌼", "SSGC120_M7vB1ch":"🍾",
+    "SSGC120_R6kP3yG":"🌹", "SSGC120_5sLf8qD":"🍷", "SSGC120_X2tN9zB":"🦄", "SSGC120_bC4mK7v":"✨",
+    "SSGC120_P8rD1wK":"🔔", "SSGC120_K3sF9tJ":"💎", "SSGC120_mQ2xZ7w":"💌", "SSGC120_F5hR1cY":"🎈",
+    "SSGC120_h4lg1kh":"👩🏻‍🏫", "SSGC120_oAhb2nA":"🧑🏻‍🏫", "SSGC120_T7t9kXI":"👨🏻‍🏫", "SSGC120_z0DweIa":"🖇️",
+    "SSGC120_AnSR5Ud":"👩🏻‍🎓", "SSGC120_NEq8ICY":"🧑🏻‍🎓", "SSGC120_22hcHMD":"🖋️", "SSGC120_pUhCFdQ":"🖊️",
+    "SSGC120_KoohS3q":"🪶", "SSGC120_JGBKPFu":"📋", "SSGC120_y7w4MbO":"🖍️", "SSGC120_rcykG6k":"⌛",
+    "SSGC120_JB4YSEC":"✌️", "SSGC120_PNrgZb0":"😍", "SSGC120_TmtjscF":"🔋", "SSGC120_dohFNim":"🌈"
+};
+
+const congratsBanner = document.getElementById('congrats-banner');
+const resetBtn = document.getElementById('reset-btn');
+const progressText = document.getElementById('progress-text');
+const modal = document.getElementById('confirm-modal');
+const modalCancel = document.getElementById('modal-cancel');
+const modalConfirm = document.getElementById('modal-confirm');
+const comboModal = document.getElementById('combo-modal');
+const comboCancel = document.getElementById('combo-cancel');
+const comboConfirm = document.getElementById('combo-confirm');
+let currentRedeemingComboId = null; 
+
+function triggerCelebration() {
+    confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, colors: ['#ffd700', '#003366', '#ffffff'] });
+}
+
+function getCollectedStamps() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch (e) { return []; }
+}
+function saveCollectedStamps(stampsArray) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(stampsArray));
+}
+function getRedeemedCombos() {
+    try { return JSON.parse(localStorage.getItem(COMBO_REDEEMED_KEY)) || []; } catch (e) { return []; }
+}
+function saveRedeemedCombos(redeemedArray) {
+    localStorage.setItem(COMBO_REDEEMED_KEY, JSON.stringify(redeemedArray));
+}
+
+function checkSpeedLimit() {
+    const lastScanTime = localStorage.getItem('ssgc_last_scan_time');
+    const now = Date.now();
+    if (lastScanTime && (now - parseInt(lastScanTime)) < 15000) { return false; }
+    localStorage.setItem('ssgc_last_scan_time', now.toString());
+    return true; 
+}
+
+function checkComboStatus(stamps, keys, requiredCount) {
+    let count = 0;
+    for (let i = 0; i < stamps.length; i++) {
+        if (keys.includes(stamps[i])) count++;
+    }
+    return count >= requiredCount;
+}
+
+function getUnlockIndex(keys, requiredCount, collectedStamps) {
+    let count = 0;
+    for (let i = 0; i < collectedStamps.length; i++) {
+        if (keys.includes(collectedStamps[i])) {
+            count++;
+            if (count === requiredCount) return i; 
+        }
+    }
+    return -1; 
+}
+
+function updateUI() {
+    const collectedStamps = getCollectedStamps();
+    const count = collectedStamps.length;
+    const emptyBoxes = document.querySelectorAll('.stamp-box.empty');
+
+    emptyBoxes.forEach((box, index) => {
+        if (index < count) {
+            box.classList.add('unlocked');
+            const stampId = collectedStamps[index];
+            box.innerText = stampEmojis[stampId] || "✨"; 
+        } else {
+            box.classList.remove('unlocked');
+            box.innerText = '';
+        }
+    });
+
+    progressText.innerText = `Stamps Collected 印花進度: ${Math.min(count, TARGET_STAMPS)} / ${TARGET_STAMPS}`;
+
+    if (count >= TARGET_STAMPS) {
+        congratsBanner.style.display = 'block';
+        resetBtn.disabled = false;
+    } else {
+        congratsBanner.style.display = 'none';
+        resetBtn.disabled = true;
+    }
+  
+    const redeemedCombos = getRedeemedCombos();
+    combos.forEach(c => {
+        const unlockIndex = getUnlockIndex(c.keys, c.req, collectedStamps);
+        const img = document.getElementById(c.img);
+        if (img) {
+            img.style.display = (unlockIndex !== -1 && !redeemedCombos.includes(c.img)) ? 'block' : 'none';
+            img.style.order = unlockIndex;
+        }
+    });
+}
+
+window.addEventListener('storage', function(event) {
+    if (event.key === STORAGE_KEY || event.key === COMBO_REDEEMED_KEY) updateUI();
+});
+
+const urlParams = new URLSearchParams(window.location.search);
+const scannedStamp = urlParams.get('stamp');
+
+if (scannedStamp) {
+    if (stampEmojis.hasOwnProperty(scannedStamp)) {
+        let collectedStamps = getCollectedStamps();
+        
+        if (!collectedStamps.includes(scannedStamp) && collectedStamps.length < TARGET_STAMPS) {
+            if (!checkSpeedLimit()) {
+                alert("You are scanning too fast! Please wait a moment before scanning again. \n\n您掃描得太快了！請稍等片刻再掃描。");
+            } else {
+                const previousStatus = combos.map(c => checkComboStatus(collectedStamps, c.keys, c.req));
+                collectedStamps.push(scannedStamp);
+                saveCollectedStamps(collectedStamps);
+                
+                let shouldCelebrate = false;
+                combos.forEach((c, index) => {
+                    const isDoneNow = checkComboStatus(collectedStamps, c.keys, c.req);
+                    if (!previousStatus[index] && isDoneNow) shouldCelebrate = true;
+                });
+                
+                if (collectedStamps.length === TARGET_STAMPS) shouldCelebrate = true;
+                if (shouldCelebrate) setTimeout(triggerCelebration, 300); 
+            }
+        }
+    }
+    window.history.replaceState(null, '', window.location.pathname);
+}
+
+updateUI();
+
+resetBtn.addEventListener('click', () => modal.style.display = 'flex');
+modalCancel.addEventListener('click', () => modal.style.display = 'none');
+modalConfirm.addEventListener('click', () => {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(COMBO_REDEEMED_KEY);
+    modal.style.display = 'none';
+    updateUI();
+});
+
+const allComboImages = document.querySelectorAll('.bonus-img');
+allComboImages.forEach(img => {
+    img.addEventListener('click', function() {
+        currentRedeemingComboId = this.id;
+        comboModal.style.display = 'flex';
+    });
+});
+
+comboCancel.addEventListener('click', () => {
+    comboModal.style.display = 'none';
+    currentRedeemingComboId = null;
+});
+
+comboConfirm.addEventListener('click', () => {
+    if (currentRedeemingComboId) {
+        const redeemed = getRedeemedCombos();
+        if (!redeemed.includes(currentRedeemingComboId)) {
+            redeemed.push(currentRedeemingComboId);
+            saveRedeemedCombos(redeemed);
+        }
+        comboModal.style.display = 'none';
+        currentRedeemingComboId = null;
+        updateUI(); 
+    }
+});
+</script>
+</body>
+</html>
