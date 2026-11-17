@@ -335,6 +335,23 @@ const physicsKeys = ["SSGC120_Physics_n31w", "SSGC120_Physics_n31v", "SSGC120_Ph
 const pheKeys = ["SSGC120_PE_Health_q52s", "SSGC120_PE_Health_q52r", "SSGC120_PE_Health_q52t"];       
 const gepKeys = ["SSGC120_GlobalExp_y25z", "SSGC120_GlobalExp_y25x", "SSGC120_GlobalExp_y25y"];
 
+        // Master array for all combo logic
+const combos = [
+    { keys: arcKeys, req: 2, img: 'arc-combo-img' },
+    { keys: chiKeys, req: 2, img: 'chi-combo-img' },
+    { keys: histKeys, req: 2, img: 'hist-combo-img' },
+    { keys: mcneKeys, req: 2, img: 'mcne-combo-img' },
+    { keys: engKeys, req: 3, img: 'eng-combo-img' },
+    { keys: musKeys, req: 1, img: 'mus-combo-img' },
+    { keys: reKeys, req: 1, img: 're-combo-img' },
+    { keys: econKeys, req: 2, img: 'econ-combo-img' },
+    { keys: bioKeys, req: 1, img: 'bio-combo-img' },
+    { keys: mathKeys, req: 2, img: 'math-combo-img' },
+    { keys: physicsKeys, req: 3, img: 'phy-combo-img' },
+    { keys: pheKeys, req: 3, img: 'phe-combo-img' },
+    { keys: gepKeys, req: 3, img: 'gep-combo-img' }
+];
+
 // 1. Secret password strings
 const stampEmojis = {
     // 1. Archives Team
@@ -590,83 +607,17 @@ function updateUI() {
   
     // --- UPDATED COMBO VISUAL LOGIC WITH REDEMPTION CHECK ---
     const redeemedCombos = getRedeemedCombos();
-     // 1. Archives (Requires 2)
-    const arcUnlockIndex = getUnlockIndex(arcKeys, 2, collectedStamps);
-    const arcImg = document.getElementById('arc-combo-img');
-    arcImg.style.display = (arcUnlockIndex !== -1 && !redeemedCombos.includes('arc-combo-img')) ? 'block' : 'none';
-    arcImg.style.order = arcUnlockIndex; 
-
-       // 2. Chin (Requires 2)
-    const chiUnlockIndex = getUnlockIndex(chiKeys, 2, collectedStamps);
-    const chiImg = document.getElementById('chi-combo-img');
-    chiImg.style.display = (chiUnlockIndex !== -1 && !redeemedCombos.includes('chi-combo-img')) ? 'block' : 'none';
-    chiImg.style.order = chiUnlockIndex; 
-
-    // 3. HisCivic (Requires 2)
-    const histUnlockIndex = getUnlockIndex(histKeys, 2, collectedStamps);
-    const histImg = document.getElementById('hist-combo-img');
-    histImg.style.display = (histUnlockIndex !== -1 && !redeemedCombos.includes('hist-combo-img')) ? 'block' : 'none';
-    histImg.style.order = histUnlockIndex;
-
-    // 4. CHisMCN (Requires 2)
-    const mcneUnlockIndex = getUnlockIndex(mcneKeys, 2, collectedStamps);
-    const mcneImg = document.getElementById('mcne-combo-img');
-    mcneImg.style.display = (mcneUnlockIndex !== -1 && !redeemedCombos.includes('mcne-combo-img')) ? 'block' : 'none';
-    mcneImg.style.order = mcneUnlockIndex;
-
-    // 5. Eng (Requires 3)
-    const engUnlockIndex = getUnlockIndex(engKeys, 3, collectedStamps);
-    const engImg = document.getElementById('eng-combo-img');
-    engImg.style.display = (engUnlockIndex !== -1 && !redeemedCombos.includes('eng-combo-img')) ? 'block' : 'none';
-    engImg.style.order = engUnlockIndex;
+// --- UPDATED COMBO VISUAL LOGIC WITH REDEMPTION CHECK ---
+    const redeemedCombos = getRedeemedCombos();
     
-    // 6. Music (Requires 1)
-    const musUnlockIndex = getUnlockIndex(musKeys, 1, collectedStamps);
-    const musImg = document.getElementById('mus-combo-img');
-    musImg.style.display = (musUnlockIndex !== -1 && !redeemedCombos.includes('mus-combo-img')) ? 'block' : 'none';
-    musImg.style.order = musUnlockIndex;
-
-    // 7. RE (Requires 1)
-    const reUnlockIndex = getUnlockIndex(reKeys, 1, collectedStamps);
-    const reImg = document.getElementById('re-combo-img');
-    reImg.style.display = (reUnlockIndex !== -1 && !redeemedCombos.includes('re-combo-img')) ? 'block' : 'none';
-    reImg.style.order = reUnlockIndex;
-    
-    // 8. Econ (Requires 2)
-    const econUnlockIndex = getUnlockIndex(econKeys, 2, collectedStamps);
-    const econImg = document.getElementById('econ-combo-img');
-    econImg.style.display = (econUnlockIndex !== -1 && !redeemedCombos.includes('econ-combo-img')) ? 'block' : 'none';
-    econImg.style.order = econUnlockIndex;
-
-    // 9. Bio (Requires 1)
-    const bioUnlockIndex = getUnlockIndex(bioKeys, 1, collectedStamps);
-    const bioImg = document.getElementById('bio-combo-img');
-    bioImg.style.display = (bioUnlockIndex !== -1 && !redeemedCombos.includes('bio-combo-img')) ? 'block' : 'none';
-    bioImg.style.order = bioUnlockIndex;
-    
-    // 10. Math (Requires 2)
-    const mathUnlockIndex = getUnlockIndex(mathKeys, 2, collectedStamps);
-    const mathImg = document.getElementById('math-combo-img');
-    mathImg.style.display = (mathUnlockIndex !== -1 && !redeemedCombos.includes('math-combo-img')) ? 'block' : 'none';
-    mathImg.style.order = mathUnlockIndex; 
-
-    // 11. Physics (Requires 3)
-    const phyUnlockIndex = getUnlockIndex(physicsKeys, 3, collectedStamps);
-    const phyImg = document.getElementById('phy-combo-img');
-    phyImg.style.display = (phyUnlockIndex !== -1 && !redeemedCombos.includes('phy-combo-img')) ? 'block' : 'none';
-    phyImg.style.order = phyUnlockIndex;
-    
-    // 12. PHE (Requires 3)
-    const pheUnlockIndex = getUnlockIndex(pheKeys, 3, collectedStamps);
-    const pheImg = document.getElementById('phe-combo-img');
-    pheImg.style.display = (pheUnlockIndex !== -1 && !redeemedCombos.includes('phe-combo-img')) ? 'block' : 'none';
-    pheImg.style.order = pheUnlockIndex;
-    
-    // 13. GEP (Requires 3)
-    const gepUnlockIndex = getUnlockIndex(gepKeys, 3, collectedStamps);
-    const gepImg = document.getElementById('gep-combo-img');
-    gepImg.style.display = (gepUnlockIndex !== -1 && !redeemedCombos.includes('gep-combo-img')) ? 'block' : 'none';
-    gepImg.style.order = gepUnlockIndex;
+    combos.forEach(c => {
+        const unlockIndex = getUnlockIndex(c.keys, c.req, collectedStamps);
+        const img = document.getElementById(c.img);
+        
+        // Show the image only if it's unlocked AND hasn't been redeemed yet
+        img.style.display = (unlockIndex !== -1 && !redeemedCombos.includes(c.img)) ? 'block' : 'none';
+        img.style.order = unlockIndex;
+    });
 }
 
 // Handle URL scanning
@@ -679,58 +630,23 @@ if (scannedStamp) {
         
         if (!collectedStamps.includes(scannedStamp) && collectedStamps.length < TARGET_STAMPS) {
             
+
             // 1. Check status BEFORE adding the new stamp
-            const arcWasDone = checkComboStatus(collectedStamps, arcKeys, 2);
-            const chiWasDone = checkComboStatus(collectedStamps, chiKeys, 2);
-            const histWasDone = checkComboStatus(collectedStamps, histKeys, 2);
-            const mcneWasDone = checkComboStatus(collectedStamps, mcneKeys, 2);
-            const engWasDone = checkComboStatus(collectedStamps, engKeys, 3);
-            const musWasDone = checkComboStatus(collectedStamps, musKeys, 1);
-            const reWasDone = checkComboStatus(collectedStamps, reKeys, 1);
-            const econWasDone = checkComboStatus(collectedStamps, econKeys, 2);
-            const bioWasDone = checkComboStatus(collectedStamps, bioKeys, 1);
-            const mathWasDone = checkComboStatus(collectedStamps, mathKeys, 2);
-            const phyWasDone = checkComboStatus(collectedStamps, physicsKeys, 3);
-            const pheWasDone = checkComboStatus(collectedStamps, pheKeys, 3);
-            const gepWasDone = checkComboStatus(collectedStamps, gepKeys, 3);
+            const previousStatus = combos.map(c => checkComboStatus(collectedStamps, c.keys, c.req));
     
-            
             // 2. Add the stamp
             collectedStamps.push(scannedStamp);
             saveCollectedStamps(collectedStamps);
             
-            // 3. Check status AFTER adding the new stamp
-            const arcIsDone = checkComboStatus(collectedStamps, arcKeys, 2);
-            const chiIsDone = checkComboStatus(collectedStamps, chiKeys, 2);
-            const histIsDone = checkComboStatus(collectedStamps, histKeys, 2);
-            const mcneIsDone = checkComboStatus(collectedStamps, mcneKeys, 2);
-            const engIsDone = checkComboStatus(collectedStamps, engKeys, 3);
-            const musIsDone = checkComboStatus(collectedStamps, musKeys, 1);            
-            const reIsDone = checkComboStatus(collectedStamps, reKeys, 1);
-            const econIsDone = checkComboStatus(collectedStamps, econKeys, 2);
-            const bioIsDone = checkComboStatus(collectedStamps, bioKeys, 1);
-            const mathIsDone = checkComboStatus(collectedStamps, mathKeys, 2);
-            const phyIsDone = checkComboStatus(collectedStamps, physicsKeys, 3);           
-            const pheIsDone = checkComboStatus(collectedStamps, pheKeys, 3);
-            const gepIsDone = checkComboStatus(collectedStamps, gepKeys, 3);
-            
-            // 4. Trigger celebration if something NEW was unlocked
+            // 3 & 4. Check new status and trigger celebration if something NEW was unlocked
             let shouldCelebrate = false;
             
-            // Did a combo just flip from false to true?
-            if (!arcWasDone && arcIsDone) shouldCelebrate = true;
-            if (!chiWasDone && chiIsDone) shouldCelebrate = true;
-            if (!histWasDone && histIsDone) shouldCelebrate = true;
-            if (!mcneWasDone && mcneIsDone) shouldCelebrate = true;
-            if (!engWasDone && engIsDone) shouldCelebrate = true;
-            if (!musWasDone && musIsDone) shouldCelebrate = true;
-            if (!reWasDone && reIsDone) shouldCelebrate = true;
-            if (!econWasDone && econIsDone) shouldCelebrate = true;
-            if (!bioWasDone && bioIsDone) shouldCelebrate = true;
-            if (!mathWasDone && mathIsDone) shouldCelebrate = true;
-            if (!phyWasDone && phyIsDone) shouldCelebrate = true;
-            if (!pheWasDone && pheIsDone) shouldCelebrate = true;
-            if (!gepWasDone && gepIsDone) shouldCelebrate = true;
+            combos.forEach((c, index) => {
+                const isDoneNow = checkComboStatus(collectedStamps, c.keys, c.req);
+                if (!previousStatus[index] && isDoneNow) {
+                    shouldCelebrate = true;
+                }
+            });
             
             // Did they just hit the final 28 target?
             if (collectedStamps.length === TARGET_STAMPS) shouldCelebrate = true;
