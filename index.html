@@ -318,6 +318,43 @@
     </div>
     
 <script>
+    // Add this right at the top of your script block
+function blockInAppBrowsers() {
+    const ua = navigator.userAgent || navigator.vendor || window.opera;
+    // Check if the user agent matches WeChat, WhatsApp, FB, IG, or Line
+    const isInApp = (
+        ua.indexOf("MicroMessenger") > -1 || // This is WeChat
+        ua.indexOf("WhatsApp") > -1 ||
+        ua.indexOf("FBAN") > -1 || 
+        ua.indexOf("FBAV") > -1 || 
+        ua.indexOf("Instagram") > -1 || 
+        ua.indexOf("Line") > -1
+    );
+
+    if (isInApp) {
+        // Erase the entire website and replace it with a strict warning
+        document.body.innerHTML = `
+            <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; background:#003366; color:white; text-align:center; padding:30px; box-sizing: border-box;">
+                <h2 style="color:#ffd700; margin-bottom: 20px;">⚠️ Action Required<br>請切換瀏覽器</h2>
+                <p style="font-size: 18px; line-height: 1.6; margin-bottom: 30px;">
+                    To securely save your stamps, this reward card cannot be used inside WeChat or WhatsApp.<br><br>
+                    為了確保您的印花能安全儲存，請勿在微信或 WhatsApp 內使用此卡。
+                </p>
+                <div style="background: white; color: #003366; padding: 15px; border-radius: 10px; font-weight: bold; font-size: 16px;">
+                    Tap the menu icon (⋮ or ⋯) in the top right corner and select:<br><br>
+                    "Open in Default Browser" /<br>
+                    "Open in Safari / Chrome"<br><br>
+                    請點擊右上角的選單按鈕，並選擇「在瀏覽器 / Safari / Chrome 中開啟」
+                </div>
+            </div>
+        `;
+        // Stop the rest of the script from loading so no stamps can be processed
+        throw new Error("Execution stopped because user is in an In-App Browser.");
+    }
+}
+
+// Run the blocker immediately!
+blockInAppBrowsers();
 const STORAGE_KEY = 'ssgc_scanned_stamps_120';
 const COMBO_REDEEMED_KEY = 'ssgc_redeemed_combos_120';
 const TARGET_STAMPS = 28;
