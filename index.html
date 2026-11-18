@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SSGC 120th Anniversary Open Day Stamp Card</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <style>
         :root {
             --pale-blue: #e6f2ff;
@@ -222,7 +223,21 @@
     <div class="progress-counter" id="progress-text">
         Stamps Collected 印花進度: 0 / 28
     </div>
+    
+<!-- New Scan Button -->
+    <button id="start-scan-btn" class="action-btn" style="background-color: #0056b3; margin: 10px 0; width: 100%; max-width: 300px;">
+        📷 Scan QR Code 掃描
+    </button>
 
+    <!-- Scanner Modal -->
+    <div id="scanner-modal" class="modal-overlay">
+        <div class="modal-box" style="width: 90%; max-width: 400px; padding: 15px;">
+            <h3 style="margin-top: 0; color: var(--dark-blue);">Scan Stamp / 掃描印花</h3>
+            <div id="reader" style="width: 100%;"></div>
+            <button id="close-scanner" class="btn-cancel" style="margin-top: 15px; width: 100%;">Close / 關閉</button>
+        </div>
+    </div>
+    
     <div id="congrats-banner" class="congratulations">
         🎉🎉 Congratulations! You have collected 28 stamps! Please proceed to Rooms M009 / M010 in the June Li Building to redeem your souvenirs.<br><br>
         恭喜您！您已集齊28枚印花！請前往李余愛喜大樓M009/M010室領取紀念品。🎉🎉
@@ -474,19 +489,22 @@ window.addEventListener('storage', function(event) {
     if (event.key === STORAGE_KEY || event.key === COMBO_REDEEMED_KEY) updateUI();
 });
 
-const urlParams = new URLSearchParams(window.location.search);
-const scannedStamp = urlParams.get('stamp');
-
-if (scannedStamp) {
-    if (stampEmojis.hasOwnProperty(scannedStamp)) {
+// 1. Extract the logic into a reusable function
+function processStamp(stampId) {
+    if (stampEmojis.hasOwnProperty(stampId)) {
         let collectedStamps = getCollectedStamps();
         
-        if (!collectedStamps.includes(scannedStamp) && collectedStamps.length < TARGET_STAMPS) {
+        if (collectedStamps.includes(stampId)) {
+            alert("You have already collected this stamp! \n\n您已收集過此印花！");
+            return;
+        }
+
+        if (collectedStamps.length < TARGET_STAMPS) {
             if (!checkSpeedLimit()) {
                 alert("You are scanning too fast! Please wait a moment before scanning again. \n\n您掃描得太快了！請稍等片刻再掃描。");
             } else {
                 const previousStatus = combos.map(c => checkComboStatus(collectedStamps, c.keys, c.req));
-                collectedStamps.push(scannedStamp);
+                collectedStamps.push(stampId);
                 saveCollectedStamps(collectedStamps);
                 
                 let shouldCelebrate = false;
@@ -497,11 +515,68 @@ if (scannedStamp) {
                 
                 if (collectedStamps.length === TARGET_STAMPS) shouldCelebrate = true;
                 if (shouldCelebrate) setTimeout(triggerCelebration, 300); 
+                
+                // Update UI instantly
+                updateUI();
             }
         }
+    } else {
+        alert("Invalid QR Code. \n\n無效的二維碼。");
     }
+}
+
+// 2. Keep the URL check just in case they DO scan with the native camera
+const urlParams = new URLSearchParams(window.location.search);
+const urlStamp = urlParams.get('stamp');
+if (urlStamp) {
+    processStamp(urlStamp);
     window.history.replaceState(null, '', window.location.pathname);
 }
+
+// 3. Set up the In-App Scanner
+let html5QrcodeScanner;
+
+document.getElementById('start-scan-btn').addEventListener('click', () => {
+    document.getElementById('scanner-modal').style.display = 'flex';
+    
+    html5QrcodeScanner = new Html5Qrcode("reader");
+    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+    
+    html5QrcodeScanner.start({ facingMode: "environment" }, config, (decodedText) => {
+        // When a QR code is successfully scanned:
+        html5QrcodeScanner.stop().then(() => {
+            document.getElementById('scanner-modal').style.display = 'none';
+            
+            // Extract the stamp ID from the scanned text
+            let stampId = decodedText;
+            try {
+                // If the QR code is a full URL (https://...), extract the ?stamp= parameter
+                const url = new URL(decodedText);
+                if (url.searchParams.get('stamp')) {
+                    stampId = url.searchParams.get('stamp');
+                }
+            } catch(e) {
+                // If it's not a URL, it just falls back to the raw decoded text
+            }
+            
+            processStamp(stampId);
+        });
+    }, (error) => {
+        // Ignore background scan errors (it fires constantly until a code is found)
+    });
+});
+
+document.getElementById('close-scanner').addEventListener('click', () => {
+    if (html5QrcodeScanner) {
+        html5QrcodeScanner.stop().then(() => {
+            document.getElementById('scanner-modal').style.display = 'none';
+        }).catch(() => {
+            document.getElementById('scanner-modal').style.display = 'none';
+        });
+    } else {
+        document.getElementById('scanner-modal').style.display = 'none';
+    }
+});
 
 updateUI();
 
