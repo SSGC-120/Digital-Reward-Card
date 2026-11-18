@@ -224,7 +224,7 @@
         Stamps Collected 印花進度: 0 / 28
     </div>
     
-<!-- New Scan Button -->
+    <!-- New Scan Button -->
     <button id="start-scan-btn" class="action-btn" style="background-color: #0056b3; margin: 10px 0; width: 100%; max-width: 300px;">
         📷 Scan 掃描
     </button>
@@ -318,7 +318,6 @@
     </div>
     
 <script>
-    // Add this right at the top of your script block
 function blockInAppBrowsers() {
     const ua = navigator.userAgent || navigator.vendor || window.opera;
     // Check if the user agent matches WeChat, WhatsApp, FB, IG, or Line
@@ -497,7 +496,23 @@ const stampEmojis = {
     "927b3c6808ba881be9e9116080486b63d62edfff71e5b97e974ace72e758cbd3": "🌈"
 };
 
-    // Function to hash the scanned QR code text securely
+const combos = [
+    { keys: arcKeys, req: 3, img: 'arc-combo-img' },
+    { keys: chiKeys, req: 3, img: 'chi-combo-img' },
+    { keys: histKeys, req: 3, img: 'hist-combo-img' },
+    { keys: mcneKeys, req: 3, img: 'mcne-combo-img' },
+    { keys: engKeys, req: 3, img: 'eng-combo-img' },
+    { keys: musKeys, req: 3, img: 'mus-combo-img' },
+    { keys: reKeys, req: 3, img: 're-combo-img' },
+    { keys: econKeys, req: 3, img: 'econ-combo-img' },
+    { keys: bioKeys, req: 3, img: 'bio-combo-img' },
+    { keys: mathKeys, req: 3, img: 'math-combo-img' },
+    { keys: physicsKeys, req: 3, img: 'phy-combo-img' },
+    { keys: pheKeys, req: 3, img: 'phe-combo-img' },
+    { keys: gepKeys, req: 3, img: 'gep-combo-img' }
+];
+
+// Function to hash the scanned QR code text securely
 async function hashStampId(text) {
     const msgUint8 = new TextEncoder().encode(text);
     const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
@@ -536,7 +551,7 @@ function saveRedeemedCombos(redeemedArray) {
 function checkSpeedLimit() {
     const lastScanTime = localStorage.getItem('ssgc_last_scan_time');
     const now = Date.now();
-    if (lastScanTime && (now - parseInt(lastScanTime)) < 000000) { return false; }
+    if (lastScanTime && (now - parseInt(lastScanTime)) < 2000) { return false; } // 2 second cooldown
     localStorage.setItem('ssgc_last_scan_time', now.toString());
     return true; 
 }
@@ -601,7 +616,6 @@ window.addEventListener('storage', function(event) {
     if (event.key === STORAGE_KEY || event.key === COMBO_REDEEMED_KEY) updateUI();
 });
 
-// 1. Extract the logic into a reusable function
 // 1. Updated processStamp function (Now uses async/await for hashing)
 async function processStamp(rawStampId, isFromUrl = false) {
     // Hash the raw text from the QR code FIRST before doing anything else
@@ -615,11 +629,8 @@ async function processStamp(rawStampId, isFromUrl = false) {
             if (!isFromUrl) {
                 alert("You have already collected this stamp! \n\n您已收集過此印花！");
             }
-            return;
-        }
-
-        if (collectedStamps.length < TARGET_STAMPS) {
-            if (!checkSpeedLimit()) {
+        } else if (collectedStamps.length < TARGET_STAMPS) {
+            if (!isFromUrl && !checkSpeedLimit()) {
                 alert("You are scanning too fast! Please wait a moment before scanning again. \n\n您掃描得太快了！請稍等片刻再掃描。");
             } else {
                 const previousStatus = combos.map(c => checkComboStatus(collectedStamps, c.keys, c.req));
@@ -632,87 +643,96 @@ async function processStamp(rawStampId, isFromUrl = false) {
                     if (!previousStatus[index] && isDoneNow) shouldCelebrate = true;
                 });
                 
-                if (collectedStamps.length === TARGET_STAMPS) shouldCelebrate = true;
-                if (shouldCelebrate) setTimeout(triggerCelebration, 300); 
+                if (collectedStamps.length >= TARGET_STAMPS) {
+                    shouldCelebrate = true;
+                }
                 
-                // Update UI instantly
+                if (shouldCelebrate) triggerCelebration();
                 updateUI();
+                
+                if (!isFromUrl) alert("Stamp collected! \n\n成功收集印花！");
             }
+        } else {
+            if (!isFromUrl) alert("Your reward card is full! \n\n您的印花卡已滿！");
         }
     } else {
-        alert("Invalid QR Code. \n\n無效的二維碼。");
+        if (!isFromUrl) alert("Invalid stamp! \n\n無效的印花！");
+    }
+
+    // Clean up URL parameter to avoid re-triggering on refresh
+    if (isFromUrl) {
+        const url = new URL(window.location);
+        url.searchParams.delete('stamp');
+        window.history.replaceState({}, '', url);
     }
 }
 
-// 2. Keep the URL check just in case they DO scan with the native camera
-const urlParams = new URLSearchParams(window.location.search);
-const urlStamp = urlParams.get('stamp');
-if (urlStamp) {
-    // Pass 'true' so it doesn't alert the user if they refresh the page
-    processStamp(urlStamp, true); 
-    // We intentionally removed replaceState so the stamp survives "Open in Safari"
-}
+// Scanner Logic
+const scanBtn = document.getElementById('start-scan-btn');
+const scannerModal = document.getElementById('scanner-modal');
+const closeScannerBtn = document.getElementById('close-scanner');
+let html5QrcodeScanner = null;
 
-// 3. Set up the In-App Scanner
-let html5QrcodeScanner;
-
-document.getElementById('start-scan-btn').addEventListener('click', () => {
-    document.getElementById('scanner-modal').style.display = 'flex';
+scanBtn.addEventListener('click', () => {
+    scannerModal.style.display = 'flex';
+    if (!html5QrcodeScanner) {
+        html5QrcodeScanner = new Html5Qrcode("reader");
+    }
     
-    html5QrcodeScanner = new Html5Qrcode("reader");
-    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-    
-    html5QrcodeScanner.start({ facingMode: "environment" }, config, (decodedText) => {
-        // When a QR code is successfully scanned:
-        html5QrcodeScanner.stop().then(() => {
-            document.getElementById('scanner-modal').style.display = 'none';
-            
-            // Extract the stamp ID from the scanned text
-            let stampId = decodedText;
+    html5QrcodeScanner.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        async (decodedText) => {
+            // Check if it's a URL with a stamp parameter, or just the raw text
+            let stampToProcess = decodedText;
             try {
-                // If the QR code is a full URL (https://...), extract the ?stamp= parameter
                 const url = new URL(decodedText);
-                if (url.searchParams.get('stamp')) {
-                    stampId = url.searchParams.get('stamp');
-                }
-            } catch(e) {
-                // If it's not a URL, it just falls back to the raw decoded text
+                const urlStamp = url.searchParams.get('stamp');
+                if (urlStamp) stampToProcess = urlStamp;
+            } catch (e) {
+                // Not a URL, use raw text
             }
             
-            processStamp(stampId);
-        });
-    }, (error) => {
-        // Ignore background scan errors (it fires constantly until a code is found)
+            // Stop scanning and process
+            html5QrcodeScanner.stop().then(() => {
+                scannerModal.style.display = 'none';
+                processStamp(stampToProcess, false);
+            }).catch((err) => console.log(err));
+        },
+        (errorMessage) => {
+            // Parse error, ignore to keep scanning
+        }
+    ).catch((err) => {
+        alert("Error starting camera: " + err);
     });
 });
 
-document.getElementById('close-scanner').addEventListener('click', () => {
+closeScannerBtn.addEventListener('click', () => {
     if (html5QrcodeScanner) {
         html5QrcodeScanner.stop().then(() => {
-            document.getElementById('scanner-modal').style.display = 'none';
-        }).catch(() => {
-            document.getElementById('scanner-modal').style.display = 'none';
+            scannerModal.style.display = 'none';
+        }).catch(err => {
+            scannerModal.style.display = 'none';
         });
     } else {
-        document.getElementById('scanner-modal').style.display = 'none';
+        scannerModal.style.display = 'none';
     }
 });
 
-updateUI();
-
-resetBtn.addEventListener('click', () => modal.style.display = 'flex');
-modalCancel.addEventListener('click', () => modal.style.display = 'none');
+// Event Listeners for Modals & Resets
+resetBtn.addEventListener('click', () => { modal.style.display = 'flex'; });
+modalCancel.addEventListener('click', () => { modal.style.display = 'none'; });
 modalConfirm.addEventListener('click', () => {
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(COMBO_REDEEMED_KEY);
-    modal.style.display = 'none';
     updateUI();
+    modal.style.display = 'none';
+    alert("Reward card has been reset. \n\n印花收集卡已重設。");
 });
 
-const allComboImages = document.querySelectorAll('.bonus-img');
-allComboImages.forEach(img => {
-    img.addEventListener('click', function() {
-        currentRedeemingComboId = this.id;
+document.querySelectorAll('.bonus-img').forEach(img => {
+    img.addEventListener('click', (e) => {
+        currentRedeemingComboId = e.target.id;
         comboModal.style.display = 'flex';
     });
 });
@@ -724,16 +744,27 @@ comboCancel.addEventListener('click', () => {
 
 comboConfirm.addEventListener('click', () => {
     if (currentRedeemingComboId) {
-        const redeemed = getRedeemedCombos();
+        let redeemed = getRedeemedCombos();
         if (!redeemed.includes(currentRedeemingComboId)) {
             redeemed.push(currentRedeemingComboId);
             saveRedeemedCombos(redeemed);
+            updateUI();
         }
         comboModal.style.display = 'none';
         currentRedeemingComboId = null;
-        updateUI(); 
     }
 });
+
+// Check URL Params on load
+window.addEventListener('load', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlStamp = urlParams.get('stamp');
+    if (urlStamp) {
+        processStamp(urlStamp, true);
+    }
+    updateUI();
+});
+
 </script>
 </body>
 </html>
