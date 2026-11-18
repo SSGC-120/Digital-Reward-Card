@@ -226,13 +226,13 @@
     
 <!-- New Scan Button -->
     <button id="start-scan-btn" class="action-btn" style="background-color: #0056b3; margin: 10px 0; width: 100%; max-width: 300px;">
-        📷 Scan Stamp 掃描印花
+        📷 Scan 掃描
     </button>
 
     <!-- Scanner Modal -->
     <div id="scanner-modal" class="modal-overlay">
         <div class="modal-box" style="width: 90%; max-width: 400px; padding: 15px;">
-            <h3 style="margin-top: 0; color: var(--dark-blue);">Scan Stamp / 掃描印花</h3>
+            <h3 style="margin-top: 0; color: var(--dark-blue);">Scan / 掃描</h3>
             <div id="reader" style="width: 100%;"></div>
             <button id="close-scanner" class="btn-cancel" style="margin-top: 15px; width: 100%;">Close / 關閉</button>
         </div>
@@ -490,12 +490,16 @@ window.addEventListener('storage', function(event) {
 });
 
 // 1. Extract the logic into a reusable function
-function processStamp(stampId) {
+// Add isFromUrl to check where the stamp is coming from
+function processStamp(stampId, isFromUrl = false) {
     if (stampEmojis.hasOwnProperty(stampId)) {
         let collectedStamps = getCollectedStamps();
         
         if (collectedStamps.includes(stampId)) {
-            alert("You have already collected this stamp! \n\n您已收集過此印花！");
+            // Only alert if they are actively scanning, NOT when the page just loads
+            if (!isFromUrl) {
+                alert("You have already collected this stamp! \n\n您已收集過此印花！");
+            }
             return;
         }
 
@@ -529,8 +533,9 @@ function processStamp(stampId) {
 const urlParams = new URLSearchParams(window.location.search);
 const urlStamp = urlParams.get('stamp');
 if (urlStamp) {
-    processStamp(urlStamp);
-    window.history.replaceState(null, '', window.location.pathname);
+    // Pass 'true' so it doesn't alert the user if they refresh the page
+    processStamp(urlStamp, true); 
+    // We intentionally removed replaceState so the stamp survives "Open in Safari"
 }
 
 // 3. Set up the In-App Scanner
