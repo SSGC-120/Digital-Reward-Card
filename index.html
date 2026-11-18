@@ -424,7 +424,7 @@ function saveRedeemedCombos(redeemedArray) {
 function checkSpeedLimit() {
     const lastScanTime = localStorage.getItem('ssgc_last_scan_time');
     const now = Date.now();
-    if (lastScanTime && (now - parseInt(lastScanTime)) < 15000) { return false; }
+    if (lastScanTime && (now - parseInt(lastScanTime)) < 50000) { return false; }
     localStorage.setItem('ssgc_last_scan_time', now.toString());
     return true; 
 }
