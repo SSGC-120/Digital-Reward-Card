@@ -657,6 +657,19 @@ window.addEventListener('storage', function(event) {
         // 1. Extract the logic into a reusable function
 // Add isFromUrl to check where the stamp is coming from
 function processStamp(rawStampText, isFromUrl = false) {
+    function processStamp(stampId, isRefresh = false) {
+    // --- NEW: Extract hash from Decoy URLs ---
+    if (typeof stampId === 'string' && stampId.startsWith('http') && stampId.includes('stamp=')) {
+        try {
+            const url = new URL(stampId);
+            stampId = url.searchParams.get('stamp');
+        } catch (e) {
+            console.error("Could not extract stamp from URL");
+        }
+    }
+    // --- END NEW ---
+
+    // Your existing processStamp code continues here:
     if (!rawStampText) return; // Stop if there's no text
     
     // 1. Clean the text of accidental spaces, then hash it
