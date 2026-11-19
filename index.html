@@ -221,14 +221,21 @@
         <p style="font-size: 15px; margin: 12px 0 3px 0; font-weight: bold; color: #003366;">Digital Reward Card 電子印花收集卡</p>
     </div>
 
-    <div class="progress-counter" id="progress-text">
-        Stamps Collected 印花進度: 0 / 28
-    </div>
-    
+   <div class="progress-counter" id="progress-text">
+Stamps Collected 印花進度:0/28
+</div>
+
+<!-- NEW WARNING TEXT -->
+<p style="font-size: 13px; color: #dc3545; font-weight: bold; margin: 10px 0 0 0; text-align: center;">
+    ⚠️ Please use this button for all scans. Do not use your phone camera.<br>
+    請使用此按鈕掃描，切勿使用手機相機。
+</p>
+
 <!-- New Scan Button -->
-    <button id="start-scan-btn" class="action-btn" style="background-color: #0056b3; margin: 10px 0; width: 100%; max-width: 300px;">
-        📷 Scan 掃描
-    </button>
+<button id="start-scan-btn" class="action-btn" style="background-color:
+#0056b3; margin: 5px 0 10px 0; width: 100%; max-width: 300px;">
+Scan 掃描
+</button>
 
     <!-- Scanner Modal -->
     <div id="scanner-modal" class="modal-overlay">
@@ -671,10 +678,14 @@ const urlParams = new URLSearchParams(window.location.search);
 const urlStamp = urlParams.get('stamp');
 if (urlStamp) {
     // Pass 'true' so it doesn't alert the user if they refresh the page
-    processStamp(urlStamp, true); 
-    // We intentionally removed replaceState so the stamp survives "Open in Safari"
+    processStamp(urlStamp, true);
+    
+    // NEW: Alert the user to stop using their phone camera
+    setTimeout(() => {
+        alert("Stamp collected! 🌟\n\nIMPORTANT: For your remaining stamps, please DO NOT use your phone's camera. Use the blue 'Scan 掃描' button on this page to ensure your stamps are saved together.");
+    }, 600);
 }
-
+// We intentionally removed replaceState so the stamp survives "Open in Safari"
 // 3. Set up the In-App Scanner
 let html5QrcodeScanner;
 
