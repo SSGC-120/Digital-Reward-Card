@@ -629,8 +629,7 @@ function updateUI() {
         }
     });
 
-    progressText.innerText = `Stamps Collected 印花進度: ${Math.min(count, TARGET_STAMPS)} / ${TARGET_STAMPS}`;
-
+progressText.innerText = `Stamps Collected 印花進度: ${Math.min(count, TARGET_STAMPS)} / ${TARGET_STAMPS}`;
     if (count >= TARGET_STAMPS) {
         congratsBanner.style.display = 'block';
         resetBtn.disabled = false;
@@ -657,9 +656,12 @@ window.addEventListener('storage', function(event) {
         // 1. Extract the logic into a reusable function
 // Add isFromUrl to check where the stamp is coming from
 function processStamp(rawStampText, isFromUrl = false) {
-    function processStamp(stampId, isRefresh = false) {
-    // --- NEW: Extract hash from Decoy URLs ---
-    if (typeof stampId === 'string' && stampId.startsWith('http') && stampId.includes('stamp=')) {
+    if (!rawStampText) return; 
+
+    let stampId = rawStampText.trim();
+
+    // Extract hash from Decoy URLs
+    if (stampId.startsWith('http') && stampId.includes('stamp=')) {
         try {
             const url = new URL(stampId);
             stampId = url.searchParams.get('stamp');
@@ -667,29 +669,22 @@ function processStamp(rawStampText, isFromUrl = false) {
             console.error("Could not extract stamp from URL");
         }
     }
-    // --- END NEW ---
 
-    // Your existing processStamp code continues here:
-    if (!rawStampText) return; // Stop if there's no text
-    
-    // 1. Clean the text of accidental spaces, then hash it
-    const cleanText = rawStampText.trim();
-    const stampId = CryptoJS.SHA256(cleanText).toString();
+    // If the text is shorter than 64 characters (raw text), hash it. If it's already a hash (from URL), keep it.
+    if (stampId.length !== 64) {
+        stampId = CryptoJS.SHA256(stampId).toString();
+    }
 
     if (stampEmojis.hasOwnProperty(stampId)) {
         let collectedStamps = getCollectedStamps();
-        
         if (collectedStamps.includes(stampId)) {
-            if (!isFromUrl) {
-                alert("You have already collected this stamp! \n\n您已收集過此印花！");
-            }
+            if (!isFromUrl) alert("You have already collected this stamp! \n\n您已收集過此印花!");
             return;
         }
-        // ... (the rest of the function stays exactly the same)
 
         if (collectedStamps.length < TARGET_STAMPS) {
             if (!checkSpeedLimit()) {
-                alert("You are scanning too fast! Please wait a moment before scanning again. \n\n您掃描得太快了！請稍等片刻再掃描。");
+                alert("You are scanning too fast! Please wait a moment before scanning again. \n\n 您掃描得太快了!請稍等片刻再掃描。");
             } else {
                 const previousStatus = combos.map(c => checkComboStatus(collectedStamps, c.keys, c.req));
                 collectedStamps.push(stampId);
@@ -702,17 +697,15 @@ function processStamp(rawStampText, isFromUrl = false) {
                 });
                 
                 if (collectedStamps.length === TARGET_STAMPS) shouldCelebrate = true;
-                if (shouldCelebrate) setTimeout(triggerCelebration, 300); 
+                if (shouldCelebrate) setTimeout(triggerCelebration, 300);
                 
-                // Update UI instantly
                 updateUI();
             }
         }
     } else {
-        alert("Invalid QR Code. \n\n無效的二維碼。");
+        alert("Invalid QR Code. \n\n 無效的二維碼。");
     }
 }
-
 // 3. Set up the In-App Scanner
 let html5QrcodeScanner;
 
