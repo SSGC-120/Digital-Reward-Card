@@ -375,13 +375,19 @@ if (urlParams.get('wrongcam') === 'true') {
                 ⚠️ Wrong Camera Used<br>請使用收集卡內的掃描器
             </h2>
             <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px; max-width: 400px;">
-                Please close this window, return to your Digital Reward Card, and tap the blue <strong>"Scan 掃描"</strong> button to collect this stamp.<br><br>
-                請關閉此視窗，返回您的電子印花收集卡，並點擊藍色的<strong>「Scan 掃描」</strong>按鈕以收集印花。
+                Please return to your Digital Reward Card, and tap the blue <strong>"Scan 掃描"</strong> button to collect this stamp.<br><br>
+                請返回您的電子印花收集卡，並點擊藍色的<strong>「Scan 掃描」</strong>按鈕以收集印花。
             </p>
+            
+            <!-- NEW DIRECT LINK BUTTON -->
+            <button onclick="window.location.href = window.location.pathname;" style="background-color: #28a745; color: white; border: none; padding: 15px 30px; font-size: 16px; border-radius: 25px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.2); margin-bottom: 25px; width: 100%; max-width: 300px;">
+                Go to Reward Card<br>前往印花收集卡
+            </button>
+
             <div style="background: white; color: #003366; padding: 15px; border-radius: 12px; max-width: 320px;">
                 <p style="font-size: 14px; font-weight: bold; margin: 0 0 10px 0;">
-                    Lost your card? Scan below to reopen:<br>
-                    找不到印花卡？請掃描下方二維碼重新開啟：
+                    Or scan below to reopen:<br>
+                    或掃描下方二維碼重新開啟：
                 </p>
                 <img src="launch-qr.png" style="width: 180px; height: auto; border-radius: 8px;" />
             </div>
