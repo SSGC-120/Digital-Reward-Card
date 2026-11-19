@@ -693,19 +693,6 @@ function processStamp(rawStampText, isFromUrl = false) {
     }
 }
 
-// 2. Keep the URL check just in case they DO scan with the native camera
-const urlParams = new URLSearchParams(window.location.search);
-const urlStamp = urlParams.get('stamp');
-if (urlStamp) {
-    // Pass 'true' so it doesn't alert the user if they refresh the page
-    processStamp(urlStamp, true);
-    
-    // NEW: Alert the user to stop using their phone camera
-    setTimeout(() => {
-        alert("Stamp collected! 🌟\n\nIMPORTANT: For your remaining stamps, please DO NOT use your phone's camera. Use the blue 'Scan 掃描' button on this page to ensure your stamps are saved together.");
-    }, 600);
-}
-// We intentionally removed replaceState so the stamp survives "Open in Safari"
 // 3. Set up the In-App Scanner
 let html5QrcodeScanner;
 
