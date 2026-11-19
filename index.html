@@ -363,6 +363,26 @@ function blockInAppBrowsers() {
 
 // Run the blocker immediately!
 blockInAppBrowsers();
+    // Run the blocker immediately!
+blockInAppBrowsers();
+
+// --- NEW DECOY URL CHECK STARTS HERE ---
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('wrongcam') === 'true') {
+    document.body.innerHTML = `
+        <div style="text-align: center; padding: 30px; font-family: sans-serif; background: #f8f9fa; height: 100vh;">
+            <h2 style="color: #dc3545; font-size: 24px;">⚠️ Oops! Wrong Camera</h2>
+            <p style="font-size: 16px; color: #333;">You scanned a booth stamp with your phone's camera, which opened a new isolated window.</p>
+            <p style="font-size: 16px; font-weight: bold; color: #0056b3;">Please close this tab, return to your Digital Card, and use the blue "Scan 掃描" button.</p>
+            <hr style="margin: 30px 0; border: 1px solid #ddd;">
+            <p style="font-size: 14px; color: #666;">Can't find your original card? Scan this to reopen it:</p>
+            <img src="launch-qr.png" style="width: 220px; max-width: 80%; border: 2px solid #ccc; border-radius: 10px; margin-top: 10px;" />
+        </div>
+    `;
+    throw new Error("Execution stopped: User scanned with native camera."); 
+}
+// --- NEW DECOY URL CHECK ENDS HERE ---
+
 const STORAGE_KEY = 'ssgc_scanned_stamps_120';
 const COMBO_REDEEMED_KEY = 'ssgc_redeemed_combos_120';
 const TARGET_STAMPS = 28;
