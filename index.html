@@ -359,7 +359,17 @@ blockInAppBrowsers();
 const STORAGE_KEY = 'ssgc_scanned_stamps_120';
 const COMBO_REDEEMED_KEY = 'ssgc_redeemed_combos_120';
 const TARGET_STAMPS = 28;
-
+// Auto-clear old, unhashed testing data
+(function cleanupOldData() {
+    let oldStamps = [];
+    try { oldStamps = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch(e) {}
+    // If the saved data contains the old readable text, wipe it clean!
+    if (oldStamps.length > 0 && oldStamps[0].includes("SSGC120_")) {
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(COMBO_REDEEMED_KEY);
+        alert("System updated for security: Old testing stamps have been cleared. You can now test safely!");
+    }
+})();
 // --- DEFINED COMBO KEYS GLOBALLY (SECURE HASHES) ---
 const arcKeys = ["ddb652c3f89d9a403b78d6967104bb4c7de7a3916c342f6137d80112b3bf1238", "392fd940bbebf09fbba47dddbdb9a5054270178eeb53b9da3279d418ffc88466", "ddc239aad5e47ee52d30311b4fff9f8dd2489e09656b33d71ae3bea7417ac5e4"];
 const chiKeys = ["8b6b8df71ba03d11d41b5c4a997d8ad4097785fbefeb415596a2a9efff26bcef", "c586e017832387cd7f5cfbe2201c4aa14fcb65cc5ab42b1bfa3bd5ea30c26574", "490894755e7cb54f16aff1b0e8d8d6125d26ccc2548f6807589c061305291ade"];
@@ -613,21 +623,22 @@ window.addEventListener('storage', function(event) {
         // 1. Extract the logic into a reusable function
 // Add isFromUrl to check where the stamp is coming from
 function processStamp(rawStampText, isFromUrl = false) {
-    // 🔴 THIS IS THE MAGIC LINE: Hash the text immediately before doing anything else
-    const stampId = CryptoJS.SHA256(rawStampText).toString();
+    if (!rawStampText) return; // Stop if there's no text
+    
+    // 1. Clean the text of accidental spaces, then hash it
+    const cleanText = rawStampText.trim();
+    const stampId = CryptoJS.SHA256(cleanText).toString();
 
-    // The rest of your function remains EXACTLY the same!
     if (stampEmojis.hasOwnProperty(stampId)) {
         let collectedStamps = getCollectedStamps();
         
         if (collectedStamps.includes(stampId)) {
-            // Only alert if they are actively scanning, NOT when the page just loads
             if (!isFromUrl) {
                 alert("You have already collected this stamp! \n\n您已收集過此印花！");
             }
             return;
         }
-
+        // ... (the rest of the function stays exactly the same)
 
         if (collectedStamps.length < TARGET_STAMPS) {
             if (!checkSpeedLimit()) {
