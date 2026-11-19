@@ -370,19 +370,26 @@ blockInAppBrowsers();
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('wrongcam') === 'true') {
     document.body.innerHTML = `
-        <div style="text-align: center; padding: 30px; font-family: sans-serif; background: #f8f9fa; height: 100vh;">
-            <h2 style="color: #dc3545; font-size: 24px;">⚠️ Oops! Wrong Camera</h2>
-            <p style="font-size: 16px; color: #333;">You scanned a booth stamp with your phone's camera, which opened a new isolated window.</p>
-            <p style="font-size: 16px; font-weight: bold; color: #0056b3;">Please close this tab, return to your Digital Card, and use the blue "Scan 掃描" button.</p>
-            <hr style="margin: 30px 0; border: 1px solid #ddd;">
-            <p style="font-size: 14px; color: #666;">Can't find your original card? Scan this to reopen it:</p>
-            <img src="launch-qr.png" style="width: 220px; max-width: 80%; border: 2px solid #ccc; border-radius: 10px; margin-top: 10px;" />
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; background: #003366; color: white; text-align: center; padding: 25px; box-sizing: border-box; font-family: 'Helvetica Neue', Arial, sans-serif;">
+            <h2 style="color: #ffd700; margin-bottom: 15px; font-size: 22px;">
+                ⚠️ Wrong Camera Used<br>請使用收集卡內的掃描器
+            </h2>
+            <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px; max-width: 400px;">
+                Please close this window, return to your Digital Reward Card, and tap the blue <strong>"Scan 掃描"</strong> button to collect this stamp.<br><br>
+                請關閉此視窗，返回您的電子印花收集卡，並點擊藍色的<strong>「Scan 掃描」</strong>按鈕以收集印花。
+            </p>
+            <div style="background: white; color: #003366; padding: 15px; border-radius: 12px; max-width: 320px;">
+                <p style="font-size: 14px; font-weight: bold; margin: 0 0 10px 0;">
+                    Lost your card? Scan below to reopen:<br>
+                    找不到印花卡？請掃描下方二維碼重新開啟：
+                </p>
+                <img src="launch-qr.png" style="width: 180px; height: auto; border-radius: 8px;" />
+            </div>
         </div>
     `;
     throw new Error("Execution stopped: User scanned with native camera."); 
 }
 // --- NEW DECOY URL CHECK ENDS HERE ---
-
 const STORAGE_KEY = 'ssgc_scanned_stamps_120';
 const COMBO_REDEEMED_KEY = 'ssgc_redeemed_combos_120';
 const TARGET_STAMPS = 28;
