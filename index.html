@@ -713,49 +713,76 @@ function processStamp(rawStampText, isFromUrl = false) {
     }
 }
 // 3. Set up the In-App Scanner
-let html5QrcodeScanner;
+let html5QrcodeScanner = null;
 
-document.getElementById('start-scan-btn').addEventListener('click', () => {
-    document.getElementById('scanner-modal').style.display = 'flex';
-    
-    html5QrcodeScanner = new Html5Qrcode("reader");
-    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-    
-    html5QrcodeScanner.start({ facingMode: "environment" }, config, (decodedText) => {
-        // When a QR code is successfully scanned:
-        html5QrcodeScanner.stop().then(() => {
-            document.getElementById('scanner-modal').style.display = 'none';
-            
-            // Extract the stamp ID from the scanned text
-            let stampId = decodedText;
-            try {
-                // If the QR code is a full URL (https://...), extract the ?stamp= parameter
-                const url = new URL(decodedText);
-                if (url.searchParams.get('stamp')) {
-                    stampId = url.searchParams.get('stamp');
-                }
-            } catch(e) {
-                // If it's not a URL, it just falls back to the raw decoded text
-            }
-            
-            processStamp(stampId);
-        });
-    }, (error) => {
-        // Ignore background scan errors (it fires constantly until a code is found)
+function stopScanner() {
+  if (html5QrcodeScanner && html5QrcodeScanner.isScanning) {
+    html5QrcodeScanner.stop().then(() => {
+      html5QrcodeScanner.clear();
+      document.getElementById('scanner-modal').style.display = 'none';
+    }).catch(() => {
+      document.getElementById('scanner-modal').style.display = 'none';
     });
+  } else {
+    document.getElementById('scanner-modal').style.display = 'none';
+  }
+}
+
+function onScanSuccess(decodedText) {
+  stopScanner();
+
+  let stampId = decodedText;
+  try {
+    const url = new URL(decodedText);
+    if (url.searchParams.get('stamp')) {
+      stampId = url.searchParams.get('stamp');
+    }
+  } catch (e) {
+    // Not a URL, use raw decoded text
+  }
+  processStamp(stampId);
+}
+
+document.getElementById('start-scan-btn').addEventListener('click', async () => {
+  document.getElementById('scanner-modal').style.display = 'flex';
+
+  if (!html5QrcodeScanner) {
+    html5QrcodeScanner = new Html5Qrcode("reader");
+  }
+
+  const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+  try {
+    // 1st try: Rear camera
+    await html5QrcodeScanner.start(
+      { facingMode: "environment" },
+      config,
+      onScanSuccess,
+      () => {} // Ignore background scan errors
+    );
+  } catch (err) {
+    console.warn("Rear camera failed, trying fallback:", err);
+    try {
+      // 2nd try: Pick the last available camera from the device list
+      const devices = await Html5Qrcode.getCameras();
+      if (devices && devices.length > 0) {
+        const cameraId = devices[devices.length - 1].id;
+        await html5QrcodeScanner.start(cameraId, config, onScanSuccess, () => {});
+      } else {
+        throw new Error("No camera found.");
+      }
+    } catch (fallbackErr) {
+      document.getElementById('scanner-modal').style.display = 'none';
+      alert(
+        "Camera could not be opened.\n" +
+        "Please allow camera permission for Chrome in your phone settings, or open this page in Safari.\n\n" +
+        "無法開啟相機。\n請在手機設定中允許 Chrome 使用相機權限，或改用 Safari 開啟此網頁。"
+      );
+    }
+  }
 });
 
-document.getElementById('close-scanner').addEventListener('click', () => {
-    if (html5QrcodeScanner) {
-        html5QrcodeScanner.stop().then(() => {
-            document.getElementById('scanner-modal').style.display = 'none';
-        }).catch(() => {
-            document.getElementById('scanner-modal').style.display = 'none';
-        });
-    } else {
-        document.getElementById('scanner-modal').style.display = 'none';
-    }
-});
+document.getElementById('close-scanner').addEventListener('click', stopScanner);
 
 updateUI();
 
